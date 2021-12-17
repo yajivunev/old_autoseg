@@ -1,0 +1,10 @@
+{
+    "base_dir": "/directory/containing/example_experiment",
+    "experiment": "example_experiment",
+    "setup": "example_mtlsd_setup",
+    "iteration": 35000,
+    "raw_dataset": "volumes/raw",
+    "num_workers": 4,
+    "file_name": "sample_A.zarr",
+    "num_cache_workers": 4
+}

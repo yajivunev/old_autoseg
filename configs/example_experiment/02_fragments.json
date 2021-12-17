@@ -1,0 +1,15 @@
+{
+    "base_dir": "/scratch1/04101/vvenu/Lsd",
+    "epsilon_agglomerate": 0.1,
+    "num_workers": 40,
+    "fragments_in_xy": true,
+    "block_size": [640,500,500],
+    "setup": "example_mtlsd_setup",
+    "fragments_dataset": "/volumes/fragments",
+    "iteration": 35000,
+    "affs_dataset": "/volumes/affs",
+    "experiment": "example_experiment",
+    "filter_fragments": 0.05,
+    "file_name": "sample_A.zarr",
+    "context": [280,260,260]
+}
