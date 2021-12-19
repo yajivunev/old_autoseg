@@ -1,5 +1,7 @@
 import torch
 from funlib.learn.torch.models import UNet, ConvPass
+from gunpowder import BatchFilter, Coordinate, Roi
+import numpy as np
 
 class MtlsdModel(torch.nn.Module):
 
@@ -68,7 +70,7 @@ class UnmaskBackground(BatchFilter):
     def process(self, batch, request):
         batch[self.target_mask].data = np.logical_or(
                 batch[self.target_mask].data,
-                np.logical_not(batch[self.background_mask].data))
+                np.logical_not(batch[self.background_mask].data)).astype(np.float32)
 
 def calc_max_padding(
         output_size,

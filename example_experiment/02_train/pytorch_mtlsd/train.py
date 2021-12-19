@@ -67,7 +67,7 @@ def train(
         config['output_shape'] = list(output_shape)
             
         with open("config.json","w") as f:
-            json.dump(config,f,indent=4)
+            json.dump(config,f)
 
     else: output_shape = kwargs.get("output_shape")
 
