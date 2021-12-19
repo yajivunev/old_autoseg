@@ -6,14 +6,14 @@ import os
 import sys
 import torch
 
-from model import MtlsdModel, WeightedMSELoss, UnmaskBackground, calc_max_padding
+from model import MtlsdModel, WeightedMSELoss calc_max_padding
 
 from gunpowder import *
 from gunpowder.ext import torch
 from gunpowder.torch import *
 from lsd.gp import AddLocalShapeDescriptor
 
-# example training script for mtlsd model for neuron segmentation
+# example training script for mtlsd model for neuron segmentation but withou labels_mask for non-padded gt
 
 logging.basicConfig(level=logging.INFO)
 
@@ -78,7 +78,6 @@ def train(
 
     raw = ArrayKey('RAW')
     labels = ArrayKey('GT_LABELS')
-    labels_mask = ArrayKey('GT_LABELS_MASK')
     pred_affs = ArrayKey('PRED_AFFS')
     gt_affs = ArrayKey('GT_AFFS')
     affs_weights = ArrayKey('AFFS_WEIGHTS')
@@ -98,7 +97,6 @@ def train(
     request = BatchRequest()
     request.add(raw, input_size)
     request.add(labels, output_size)
-    request.add(labels_mask, output_size)
     request.add(gt_lsds, output_size)
     request.add(lsds_weights, output_size)
     request.add(pred_lsds, output_size)
@@ -111,20 +109,17 @@ def train(
                     os.path.join(data_dir, sample),
                     {
                         raw: 'volumes/raw',
-                        labels: 'volumes/labels/neuron_ids',
-                        labels_mask: 'volumes/labels/mask'
+                        labels: 'volumes/labels/neuron_ids'
                     },
                     {
                         raw: ArraySpec(interpolatable=True),
-                        labels: ArraySpec(interpolatable=False),
-                        labels_mask: ArraySpec(interpolatable=False)
+                        labels: ArraySpec(interpolatable=False)
                     }
                 ) +
             Normalize(raw) +
             Pad(raw, None) +
             Pad(labels, labels_padding) +
-            Pad(labels_mask, labels_padding) +
-            RandomLocation(min_masked=0.5,mask=labels_mask)
+            RandomLocation()
             for sample in samples
         )
 
@@ -145,7 +140,6 @@ def train(
     train_pipeline += IntensityAugment(raw, 0.9, 1.1, -0.1, 0.1, z_section_wise=True)
     train_pipeline += GrowBoundary(
             labels,
-            mask=labels_mask,
             steps=1,
             only_xy=True)
 
@@ -155,8 +149,6 @@ def train(
             mask=lsds_weights,
             sigma=sigma,
             downsample=2)
-
-    train_pipeline += UnmaskBackground(lsds_weights, labels_mask)
 
     train_pipeline += AddAffinities(
             neighborhood,
@@ -206,7 +198,6 @@ def train(
     train_pipeline += Snapshot({
                 raw: 'raw',
                 labels: 'labels',
-                labels_mask: 'labels_mask',
                 gt_affs: 'gt_affs',
                 gt_lsds: 'gt_lsds',
                 pred_affs: 'pred_affs',
