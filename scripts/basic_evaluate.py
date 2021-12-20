@@ -31,6 +31,7 @@ def evaluate(
 
     nid = metrics['nid']
 
+
     logging.info("RAND: %s", rand)
     logging.info("VOI: %s", voi)
     logging.info("NVI: %s", nvi)
