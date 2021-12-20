@@ -1,0 +1,128 @@
+INFO:root:['./workers/extract_fragments_worker.py', '/scratch1/04101/vvenu/autoseg/scripts/pipeline/.extract_fragments_blockwise/CREMI/3_test/101000/283921581808657680638423009127116623230.json']
+INFO:root:{'affs_file': '/scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr', 'affs_dataset': '/volumes/affs', 'fragments_file': '/scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr', 'fragments_dataset': '/volumes/fragments', 'context': [280, 260, 260], 'block_directory': '/scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr/block_nodes', 'write_size': [640, 500, 500], 'fragments_in_xy': True, 'epsilon_agglomerate': 0.1, 'mask_file': None, 'mask_dataset': None, 'filter_fragments': 0.05, 'replace_sections': None, 'num_voxels_in_block': 250000}
+INFO:root:Reading affs from /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+INFO:root:Reading fragments from /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+INFO:root:Opening RAG file...
+INFO:root:RAG file opened
+INFO:root:block read roi begin: (2280, -260, -260)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (2560, 0, 0)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+/home1/04101/vvenu/.conda/envs/lsd/lib/python3.9/site-packages/scipy/ndimage/measurements.py:1406: RuntimeWarning: invalid value encountered in true_divide
+  results = [sum(input * grids[dir].astype(float), labels, index) / normalizer
+INFO:root:block read roi begin: (360, 1240, 240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (640, 1500, 500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (1640, 240, 1740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (1920, 500, 2000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (3560, 240, 1240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (3840, 500, 1500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (-280, 2740, 740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (0, 3000, 1000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (2920, 2240, -260)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (3200, 2500, 0)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (2280, 2740, 740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (2560, 3000, 1000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (2920, 3740, 740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (3200, 4000, 1000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (1000, 240, 2740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (1280, 500, 3000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (2920, -260, 3240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (3200, 0, 3500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (2920, 1240, 2240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (3200, 1500, 2500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (-280, 2240, 3240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (0, 2500, 3500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (1000, 3740, 2240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (1280, 4000, 2500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (2280, 2740, 3740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (2560, 3000, 4000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (4200, 240, 1240)
+INFO:root:block read roi shape: (1080, 1020, 1020)
+INFO:root:block write roi begin: (4480, 500, 1500)
+INFO:root:block write roi shape: (520, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (4200, 240, 2240)
+INFO:root:block read roi shape: (1080, 1020, 1020)
+INFO:root:block write roi begin: (4480, 500, 2500)
+INFO:root:block write roi shape: (520, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (1000, 4240, -260)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (1280, 4500, 0)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (3560, 4240, 1740)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (3840, 4500, 2000)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (1000, -260, 4240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (1280, 0, 4500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000
+INFO:root:block read roi begin: (360, 2740, 4240)
+INFO:root:block read roi shape: (1200, 1020, 1020)
+INFO:root:block write roi begin: (640, 3000, 4500)
+INFO:root:block write roi shape: (640, 500, 500)
+INFO:lsd.parallel_fragments:Assuming affinities are in [0,255]
+INFO:lsd.parallel_fragments:Performing initial fragment agglomeration until 0.100000

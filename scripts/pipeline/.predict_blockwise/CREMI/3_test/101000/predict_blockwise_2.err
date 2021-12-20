@@ -1,0 +1,596 @@
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 16 (read_roi: [-400:2960, 1064:1848, -184:600] (3360, 784, 784), write_roi [0:2560, 1248:1664, 0:416] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 14 (read_roi: [2160:5520, 232:1016, 232:1016] (3360, 784, 784), write_roi [2560:5120, 416:832, 416:832] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 17 (read_roi: [2160:5520, 648:1432, -184:600] (3360, 784, 784), write_roi [2560:5120, 832:1248, 0:416] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 13 (read_roi: [-400:2960, 648:1432, 232:1016] (3360, 784, 784), write_roi [0:2560, 832:1248, 416:832] (2560, 416, 416))
+INFO:gunpowder.torch.nodes.predict:Predicting on gpu
+INFO:gunpowder.torch.nodes.predict:Predicting on gpu
+INFO:gunpowder.torch.nodes.predict:Predicting on gpu
+INFO:gunpowder.torch.nodes.predict:Predicting on gpu
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing container /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing dataset for AFFS
+DEBUG:gunpowder.nodes.hdf5like_write_base:AFFS (volumes/affs in /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr) has offset (0, 0, 0)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 104:208, 104:208] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 22 (read_roi: [2160:5520, -184:600, 1064:1848] (3360, 784, 784), write_roi [2560:5120, 0:416, 1248:1664] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing container /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing dataset for AFFS
+DEBUG:gunpowder.nodes.hdf5like_write_base:AFFS (volumes/affs in /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr) has offset (0, 0, 0)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 208:312, 0:104] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing container /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing dataset for AFFS
+DEBUG:gunpowder.nodes.hdf5like_write_base:AFFS (volumes/affs in /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr) has offset (0, 0, 0)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 208:312, 104:208] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing container /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+DEBUG:gunpowder.nodes.hdf5like_write_base:Initializing dataset for AFFS
+DEBUG:gunpowder.nodes.hdf5like_write_base:AFFS (volumes/affs in /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr) has offset (0, 0, 0)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 312:416, 0:104] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 41 (read_roi: [-400:2960, 1064:1848, 648:1432] (3360, 784, 784), write_roi [0:2560, 1248:1664, 832:1248] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 42 (read_roi: [2160:5520, 648:1432, 648:1432] (3360, 784, 784), write_roi [2560:5120, 832:1248, 832:1248] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 45 (read_roi: [-400:2960, 1480:2264, 232:1016] (3360, 784, 784), write_roi [0:2560, 1664:2080, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 0:104, 312:416] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 46 (read_roi: [2160:5520, 1064:1848, 232:1016] (3360, 784, 784), write_roi [2560:5120, 1248:1664, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 416:520, 104:208] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 60 (read_roi: [2160:5520, 232:1016, 1480:2264] (3360, 784, 784), write_roi [2560:5120, 416:832, 1664:2080] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 312:416, 208:312] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 95 (read_roi: [2160:5520, 1064:1848, 1064:1848] (3360, 784, 784), write_roi [2560:5120, 1248:1664, 1248:1664] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 208:312, 208:312] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 131 (read_roi: [2160:5520, 1064:1848, 1480:2264] (3360, 784, 784), write_roi [2560:5120, 1248:1664, 1664:2080] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 312:416, 104:208] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 181 (read_roi: [2160:5520, 1480:2264, 1480:2264] (3360, 784, 784), write_roi [2560:5120, 1664:2080, 1664:2080] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 104:208, 416:520] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 71 (read_roi: [-400:2960, 1896:2680, 232:1016] (3360, 784, 784), write_roi [0:2560, 2080:2496, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 312:416, 312:416] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 312:416, 416:520] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 148 (read_roi: [-400:2960, 2728:3512, 232:1016] (3360, 784, 784), write_roi [0:2560, 2912:3328, 416:832] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 149 (read_roi: [2160:5520, 2312:3096, 232:1016] (3360, 784, 784), write_roi [2560:5120, 2496:2912, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 416:520, 416:520] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 180 (read_roi: [-400:2960, 1896:2680, 1480:2264] (3360, 784, 784), write_roi [0:2560, 2080:2496, 1664:2080] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 520:624, 104:208] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 187 (read_roi: [2160:5520, 1896:2680, 1064:1848] (3360, 784, 784), write_roi [2560:5120, 2080:2496, 1248:1664] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 728:832, 104:208] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 624:728, 104:208] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 202 (read_roi: [2160:5520, 2728:3512, 232:1016] (3360, 784, 784), write_roi [2560:5120, 2912:3328, 416:832] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 210 (read_roi: [-400:2960, 3560:4344, -184:600] (3360, 784, 784), write_roi [0:2560, 3744:4160, 0:416] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 520:624, 416:520] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 266 (read_roi: [2160:5520, 3144:3928, 232:1016] (3360, 784, 784), write_roi [2560:5120, 3328:3744, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 520:624, 312:416] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 315 (read_roi: [2160:5520, 2312:3096, 1480:2264] (3360, 784, 784), write_roi [2560:5120, 2496:2912, 1664:2080] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 728:832, 104:208] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 936:1040, 0:104] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 331 (read_roi: [-400:2960, 3560:4344, 648:1432] (3360, 784, 784), write_roi [0:2560, 3744:4160, 832:1248] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 332 (read_roi: [2160:5520, 3144:3928, 648:1432] (3360, 784, 784), write_roi [2560:5120, 3328:3744, 832:1248] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 832:936, 104:208] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 616 (read_roi: [2160:5520, 3560:4344, 1480:2264] (3360, 784, 784), write_roi [2560:5120, 3744:4160, 1664:2080] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 624:728, 416:520] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 35 (read_roi: [-400:2960, -184:600, 1896:2680] (3360, 784, 784), write_roi [0:2560, 0:416, 2080:2496] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 936:1040, 208:312] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 832:936, 208:312] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 84 (read_roi: [-400:2960, -184:600, 2728:3512] (3360, 784, 784), write_roi [0:2560, 0:416, 2912:3328] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 85 (read_roi: [-400:2960, 232:1016, 2312:3096] (3360, 784, 784), write_roi [0:2560, 416:832, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 936:1040, 416:520] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 127 (read_roi: [2160:5520, 648:1432, 1896:2680] (3360, 784, 784), write_roi [2560:5120, 832:1248, 2080:2496] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 0:104, 520:624] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 167 (read_roi: [2160:5520, -184:600, 3144:3928] (3360, 784, 784), write_roi [2560:5120, 0:416, 3328:3744] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 0:104, 728:832] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 104:208, 624:728] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 171 (read_roi: [-400:2960, 1064:1848, 2312:3096] (3360, 784, 784), write_roi [0:2560, 1248:1664, 2496:2912] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 172 (read_roi: [2160:5520, 648:1432, 2312:3096] (3360, 784, 784), write_roi [2560:5120, 832:1248, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 208:312, 520:624] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 231 (read_roi: [2160:5520, 1064:1848, 2312:3096] (3360, 784, 784), write_roi [2560:5120, 1248:1664, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 0:104, 832:936] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 292 (read_roi: [-400:2960, 1064:1848, 3144:3928] (3360, 784, 784), write_roi [0:2560, 1248:1664, 3328:3744] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 312:416, 624:728] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 208:312, 624:728] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 293 (read_roi: [2160:5520, 648:1432, 3144:3928] (3360, 784, 784), write_roi [2560:5120, 832:1248, 3328:3744] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 296 (read_roi: [-400:2960, 1480:2264, 2728:3512] (3360, 784, 784), write_roi [0:2560, 1664:2080, 2912:3328] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 312:416, 624:728] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 312:416, 832:936] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 380 (read_roi: [2160:5520, 1480:2264, 2728:3512] (3360, 784, 784), write_roi [2560:5120, 1664:2080, 2912:3328] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 301 (read_roi: [-400:2960, 1896:2680, 2312:3096] (3360, 784, 784), write_roi [0:2560, 2080:2496, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 416:520, 728:832] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 385 (read_roi: [-400:2960, 2312:3096, 2312:3096] (3360, 784, 784), write_roi [0:2560, 2496:2912, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 208:312, 832:936] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 386 (read_roi: [2160:5520, 1896:2680, 2312:3096] (3360, 784, 784), write_roi [2560:5120, 2080:2496, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 416:520, 728:832] (61, 104, 104)
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      8.31      0.83      0.00      
+Predict             process   10        1.72      2.38      2.07      2.09      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.08      0.45      0.18      0.16      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.05      0.09      0.06      0.06      
+
+TOTAL
+upstream                      10        1.99      10.90     3.20      2.41      
+downstream                    9         0.06      0.47      0.24      0.21      
+
+
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 477 (read_roi: [2160:5520, 1896:2680, 2728:3512] (3360, 784, 784), write_roi [2560:5120, 2080:2496, 2912:3328] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 520:624, 624:728] (64, 104, 104)
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      8.13      0.81      0.00      
+Predict             process   10        1.82      2.55      2.15      2.17      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.08      0.54      0.30      0.33      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.05      0.09      0.07      0.07      
+
+TOTAL
+upstream                      10        2.10      11.24     3.40      2.61      
+downstream                    9         0.01      0.14      0.07      0.09      
+
+
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 492 (read_roi: [2160:5520, 2728:3512, 1896:2680] (3360, 784, 784), write_roi [2560:5120, 2912:3328, 2080:2496] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 624:728, 624:728] (64, 104, 104)
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      8.11      0.81      0.00      
+Predict             process   10        2.11      2.59      2.25      2.23      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.09      0.67      0.29      0.24      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.05      0.09      0.06      0.06      
+
+TOTAL
+upstream                      10        2.32      11.23     3.47      2.61      
+downstream                    9         0.01      0.21      0.09      0.10      
+
+
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 520:624, 624:728] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 596 (read_roi: [-400:2960, 3144:3928, 2312:3096] (3360, 784, 784), write_roi [0:2560, 3328:3744, 2496:2912] (2560, 416, 416))
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.00      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.00      0.01      0.00      0.00      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      8.36      0.84      0.00      
+Predict             process   10        2.04      2.55      2.26      2.26      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.00      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.08      0.43      0.26      0.31      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.04      0.09      0.06      0.06      
+
+TOTAL
+upstream                      10        2.42      11.22     3.47      2.61      
+downstream                    9         0.02      0.32      0.12      0.08      
+
+
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 597 (read_roi: [2160:5520, 2728:3512, 2312:3096] (3360, 784, 784), write_roi [2560:5120, 2912:3328, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 520:624, 728:832] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 709 (read_roi: [2160:5520, 2312:3096, 3144:3928] (3360, 784, 784), write_roi [2560:5120, 2496:2912, 3328:3744] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 728:832, 520:624] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 717 (read_roi: [2160:5520, 2728:3512, 2728:3512] (3360, 784, 784), write_roi [2560:5120, 2912:3328, 2912:3328] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 728:832, 624:728] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 832:936, 624:728] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 861 (read_roi: [-400:2960, 3560:4344, 2728:3512] (3360, 784, 784), write_roi [0:2560, 3744:4160, 2912:3328] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 872 (read_roi: [2160:5520, 3560:4344, 2312:3096] (3360, 784, 784), write_roi [2560:5120, 3744:4160, 2496:2912] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 728:832, 728:832] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 624:728, 832:936] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1014 (read_roi: [-400:2960, 3560:4344, 3144:3928] (3360, 784, 784), write_roi [0:2560, 3744:4160, 3328:3744] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1025 (read_roi: [2160:5520, 3560:4344, 2728:3512] (3360, 784, 784), write_roi [2560:5120, 3744:4160, 2912:3328] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 936:1040, 728:832] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 28 (read_roi: [4720:8080, 232:1016, 232:1016] (3360, 784, 784), write_roi [5120:7680, 416:832, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 936:1040, 624:728] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 47 (read_roi: [4720:8080, 648:1432, 232:1016] (3360, 784, 784), write_roi [5120:7680, 832:1248, 416:832] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 936:1040, 728:832] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 936:1040, 832:936] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 68 (read_roi: [4720:8080, 648:1432, 648:1432] (3360, 784, 784), write_roi [5120:7680, 832:1248, 832:1248] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 61 (read_roi: [4720:8080, -184:600, 1480:2264] (3360, 784, 784), write_roi [5120:7680, 0:416, 1664:2080] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 416:832, 416:832] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 832:1248, 416:832] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 92 (read_roi: [4720:8080, 232:1016, 1480:2264] (3360, 784, 784), write_roi [5120:7680, 416:832, 1664:2080] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 96 (read_roi: [4720:8080, 648:1432, 1064:1848] (3360, 784, 784), write_roi [5120:7680, 832:1248, 1248:1664] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 0:416, 1664:2080] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 195 (read_roi: [4720:8080, 1896:2680, 648:1432] (3360, 784, 784), write_roi [5120:7680, 2080:2496, 832:1248] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 416:832, 1664:2080] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 832:1248, 832:1248] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 250 (read_roi: [4720:8080, 1896:2680, 1064:1848] (3360, 784, 784), write_roi [5120:7680, 2080:2496, 1248:1664] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 832:1248, 1248:1664] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 267 (read_roi: [4720:8080, 2728:3512, 232:1016] (3360, 784, 784), write_roi [5120:7680, 2912:3328, 416:832] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 277 (read_roi: [4720:8080, 3144:3928, -184:600] (3360, 784, 784), write_roi [5120:7680, 3328:3744, 0:416] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2912:3328, 416:832] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2080:2496, 832:1248] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 3328:3744, 0:416] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2080:2496, 1248:1664] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 617 (read_roi: [4720:8080, 3144:3928, 1480:2264] (3360, 784, 784), write_roi [5120:7680, 3328:3744, 1664:2080] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 748 (read_roi: [4720:8080, 3560:4344, 1480:2264] (3360, 784, 784), write_roi [5120:7680, 3744:4160, 1664:2080] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 628 (read_roi: [4720:8080, 3560:4344, 1064:1848] (3360, 784, 784), write_roi [5120:7680, 3744:4160, 1248:1664] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 125 (read_roi: [4720:8080, -184:600, 2312:3096] (3360, 784, 784), write_roi [5120:7680, 0:416, 2496:2912] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 3328:3744, 1664:2080] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 3744:4160, 1248:1664] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 3744:4160, 1664:2080] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 0:416, 2496:2912] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 381 (read_roi: [4720:8080, 1064:1848, 2728:3512] (3360, 784, 784), write_roi [5120:7680, 1248:1664, 2912:3328] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 376 (read_roi: [4720:8080, 648:1432, 3144:3928] (3360, 784, 784), write_roi [5120:7680, 832:1248, 3328:3744] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 387 (read_roi: [4720:8080, 1480:2264, 2312:3096] (3360, 784, 784), write_roi [5120:7680, 1664:2080, 2496:2912] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 467 (read_roi: [4720:8080, 648:1432, 3560:4344] (3360, 784, 784), write_roi [5120:7680, 832:1248, 3744:4160] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 832:1248, 3328:3744] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 1664:2080, 2496:2912] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 1248:1664, 2912:3328] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 832:1248, 3744:4160] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 854 (read_roi: [4720:8080, 2312:3096, 3144:3928] (3360, 784, 784), write_roi [5120:7680, 2496:2912, 3328:3744] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 863 (read_roi: [4720:8080, 2728:3512, 2728:3512] (3360, 784, 784), write_roi [5120:7680, 2912:3328, 2912:3328] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 846 (read_roi: [4720:8080, 1896:2680, 3560:4344] (3360, 784, 784), write_roi [5120:7680, 2080:2496, 3744:4160] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 873 (read_roi: [4720:8080, 3144:3928, 2312:3096] (3360, 784, 784), write_roi [5120:7680, 3328:3744, 2496:2912] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2912:3328, 2912:3328] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2080:2496, 3744:4160] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2496:2912, 3328:3744] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 341 (read_roi: [-400:2960, 3976:4760, 232:1016] (3360, 784, 784), write_roi [0:2560, 4160:4576, 416:832] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 3328:3744, 2496:2912] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 352 (read_roi: [-400:2960, 4392:5176, -184:600] (3360, 784, 784), write_roi [0:2560, 4576:4992, 0:416] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 419 (read_roi: [-400:2960, 3976:4760, 648:1432] (3360, 784, 784), write_roi [0:2560, 4160:4576, 832:1248] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 353 (read_roi: [2160:5520, 3976:4760, -184:600] (3360, 784, 784), write_roi [2560:5120, 4160:4576, 0:416] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1040:1144, 104:208] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1144:1248, 0:104] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1040:1144, 0:104] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1040:1144, 208:312] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 638 (read_roi: [-400:2960, 4808:5592, 648:1432] (3360, 784, 784), write_roi [0:2560, 4992:5408, 832:1248] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 627 (read_roi: [2160:5520, 3976:4760, 1064:1848] (3360, 784, 784), write_roi [2560:5120, 4160:4576, 1248:1664] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 652 (read_roi: [2160:5520, 4808:5592, 232:1016] (3360, 784, 784), write_roi [2560:5120, 4992:5408, 416:832] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 639 (read_roi: [2160:5520, 4392:5176, 648:1432] (3360, 784, 784), write_roi [2560:5120, 4576:4992, 832:1248] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1248:1250, 104:208] (61, 2, 104)
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        2.22      2.69      2.53      2.62      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.03      0.35      0.14      0.07      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.07      0.03      0.01      
+
+TOTAL
+upstream                      10        2.53      2.88      2.76      2.78      
+downstream                    10        0.01      0.53      0.15      0.13      
+
+
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1024 (read_roi: [-400:2960, 3976:4760, 2728:3512] (3360, 784, 784), write_roi [0:2560, 4160:4576, 2912:3328] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1248:1250, 208:312] (64, 2, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1040:1144, 312:416] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1144:1248, 208:312] (61, 104, 104)
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.00      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.00      0.00      0.00      0.00      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        2.12      2.69      2.52      2.63      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.00      0.01      0.00      0.00      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.02      0.19      0.08      0.08      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.07      0.03      0.00      
+
+TOTAL
+upstream                      10        2.19      2.86      2.68      2.75      
+downstream                    10        0.01      0.22      0.09      0.06      
+
+
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        1.98      2.69      2.50      2.64      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.03      0.32      0.11      0.06      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.07      0.03      0.00      
+
+TOTAL
+upstream                      10        2.07      2.91      2.70      2.76      
+downstream                    10        0.01      0.21      0.09      0.05      
+
+
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        2.18      2.69      2.55      2.63      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.02      0.19      0.09      0.07      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.11      0.04      0.03      
+
+TOTAL
+upstream                      10        2.49      2.91      2.74      2.76      
+downstream                    10        0.01      0.60      0.15      0.08      
+
+
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1035 (read_roi: [-400:2960, 4392:5176, 2312:3096] (3360, 784, 784), write_roi [0:2560, 4576:4992, 2496:2912] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1036 (read_roi: [2160:5520, 3976:4760, 2312:3096] (3360, 784, 784), write_roi [2560:5120, 4160:4576, 2496:2912] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1047 (read_roi: [-400:2960, 4808:5592, 1896:2680] (3360, 784, 784), write_roi [0:2560, 4992:5408, 2080:2496] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1040:1144, 728:832] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1048 (read_roi: [2160:5520, 4392:5176, 1896:2680] (3360, 784, 784), write_roi [2560:5120, 4576:4992, 2080:2496] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1040:1144, 624:728] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1144:1248, 624:728] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1248:1250, 520:624] (64, 2, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1606 (read_roi: [-400:2960, 4392:5176, 3560:4344] (3360, 784, 784), write_roi [0:2560, 4576:4992, 3744:4160] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1618 (read_roi: [-400:2960, 4808:5592, 3144:3928] (3360, 784, 784), write_roi [0:2560, 4992:5408, 3328:3744] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1607 (read_roi: [2160:5520, 3976:4760, 3560:4344] (3360, 784, 784), write_roi [2560:5120, 4160:4576, 3744:4160] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1144:1248, 520:624] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1619 (read_roi: [2160:5520, 4392:5176, 3144:3928] (3360, 784, 784), write_roi [2560:5120, 4576:4992, 3328:3744] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1040:1144, 936:1040] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1248:1250, 832:936] (64, 2, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1144:1248, 936:1040] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1632 (read_roi: [2160:5520, 4808:5592, 2728:3512] (3360, 784, 784), write_roi [2560:5120, 4992:5408, 2912:3328] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 2116 (read_roi: [2160:5520, 4808:5592, 3560:4344] (3360, 784, 784), write_roi [2560:5120, 4992:5408, 3744:4160] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 548 (read_roi: [4720:8080, 4392:5176, -184:600] (3360, 784, 784), write_roi [5120:7680, 4576:4992, 0:416] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1144:1248, 832:936] (61, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 909 (read_roi: [4720:8080, 4392:5176, 1064:1848] (3360, 784, 784), write_roi [5120:7680, 4576:4992, 1248:1664] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4576:4992, 0:416] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1248:1250, 728:832] (61, 2, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1248:1250, 936:1040] (61, 2, 104)
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4576:4992, 1248:1664] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1076 (read_roi: [4720:8080, 4808:5592, 1064:1848] (3360, 784, 784), write_roi [5120:7680, 4992:5408, 1248:1664] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1423 (read_roi: [4720:8080, 4392:5176, 2312:3096] (3360, 784, 784), write_roi [5120:7680, 4576:4992, 2496:2912] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1864 (read_roi: [4720:8080, 4392:5176, 3144:3928] (3360, 784, 784), write_roi [5120:7680, 4576:4992, 3328:3744] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1878 (read_roi: [4720:8080, 4808:5592, 2728:3512] (3360, 784, 784), write_roi [5120:7680, 4992:5408, 2912:3328] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4576:4992, 2496:2912] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4992:5408, 2912:3328] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4992:5408, 1248:1664] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4576:4992, 3328:3744] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 365 (read_roi: [-400:2960, 232:1016, 4392:5176] (3360, 784, 784), write_roi [0:2560, 416:832, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 456 (read_roi: [-400:2960, 232:1016, 4808:5592] (3360, 784, 784), write_roi [0:2560, 416:832, 4992:5408] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 368 (read_roi: [2160:5520, 232:1016, 3976:4760] (3360, 784, 784), write_roi [2560:5120, 416:832, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 367 (read_roi: [-400:2960, 648:1432, 3976:4760] (3360, 784, 784), write_roi [0:2560, 832:1248, 4160:4576] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 104:208, 1248:1250] (64, 104, 2)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 104:208, 1144:1248] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 104:208, 1040:1144] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 208:312, 1040:1144] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 567 (read_roi: [2160:5520, 648:1432, 4392:5176] (3360, 784, 784), write_roi [2560:5120, 832:1248, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 827 (read_roi: [2160:5520, 1064:1848, 4808:5592] (3360, 784, 784), write_roi [2560:5120, 1248:1664, 4992:5408] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 691 (read_roi: [2160:5520, 1064:1848, 4392:5176] (3360, 784, 784), write_roi [2560:5120, 1248:1664, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 832 (read_roi: [2160:5520, 1480:2264, 4392:5176] (3360, 784, 784), write_roi [2560:5120, 1664:2080, 4576:4992] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 416:520, 1144:1248] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 312:416, 1144:1248] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 208:312, 1144:1248] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 312:416, 1248:1250] (61, 104, 2)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 695 (read_roi: [-400:2960, 1896:2680, 3976:4760] (3360, 784, 784), write_roi [0:2560, 2080:2496, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1162 (read_roi: [2160:5520, 1896:2680, 4808:5592] (3360, 784, 784), write_roi [2560:5120, 2080:2496, 4992:5408] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1177 (read_roi: [2160:5520, 2728:3512, 3976:4760] (3360, 784, 784), write_roi [2560:5120, 2912:3328, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1168 (read_roi: [-400:2960, 2728:3512, 4392:5176] (3360, 784, 784), write_roi [0:2560, 2912:3328, 4576:4992] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 728:832, 1040:1144] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 728:832, 1144:1248] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 520:624, 1248:1250] (61, 104, 2)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 520:624, 1040:1144] (64, 104, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1366 (read_roi: [-400:2960, 3144:3928, 4392:5176] (3360, 784, 784), write_roi [0:2560, 3328:3744, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1576 (read_roi: [-400:2960, 3144:3928, 4808:5592] (3360, 784, 784), write_roi [0:2560, 3328:3744, 4992:5408] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1585 (read_roi: [-400:2960, 3560:4344, 4392:5176] (3360, 784, 784), write_roi [0:2560, 3744:4160, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1816 (read_roi: [-400:2960, 3560:4344, 4808:5592] (3360, 784, 784), write_roi [0:2560, 3744:4160, 4992:5408] (2560, 416, 416))
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 832:936, 1248:1250] (64, 104, 2)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 936:1040, 1144:1248] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 832:936, 1144:1248] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 936:1040, 1248:1250] (64, 104, 2)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 992 (read_roi: [4720:8080, 1480:2264, 4392:5176] (3360, 784, 784), write_roi [5120:7680, 1664:2080, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1170 (read_roi: [4720:8080, 1896:2680, 4392:5176] (3360, 784, 784), write_roi [5120:7680, 2080:2496, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 999 (read_roi: [4720:8080, 1896:2680, 3976:4760] (3360, 784, 784), write_roi [5120:7680, 2080:2496, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1163 (read_roi: [4720:8080, 1480:2264, 4808:5592] (3360, 784, 784), write_roi [5120:7680, 1664:2080, 4992:5408] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 1664:2080, 4576:4992] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 1664:2080, 4992:5408] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.02      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        0.84      2.71      2.24      2.60      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.02      0.19      0.11      0.12      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.08      0.04      0.05      
+
+TOTAL
+upstream                      10        1.12      2.98      2.45      2.74      
+downstream                    10        0.03      0.98      0.27      0.18      
+
+
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2080:2496, 4160:4576] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 2080:2496, 4576:4992] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1828 (read_roi: [4720:8080, 3144:3928, 4392:5176] (3360, 784, 784), write_roi [5120:7680, 3328:3744, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1595 (read_roi: [-400:2960, 3976:4760, 3976:4760] (3360, 784, 784), write_roi [0:2560, 4160:4576, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1826 (read_roi: [-400:2960, 3976:4760, 4392:5176] (3360, 784, 784), write_roi [0:2560, 4160:4576, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1837 (read_roi: [-400:2960, 4392:5176, 3976:4760] (3360, 784, 784), write_roi [0:2560, 4576:4992, 4160:4576] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 3328:3744, 4576:4992] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.00      0.01      0.00      0.00      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        2.25      2.70      2.59      2.62      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.00      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.02      0.21      0.13      0.14      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.09      0.03      0.02      
+
+TOTAL
+upstream                      10        2.53      2.96      2.80      2.79      
+downstream                    10        0.01      0.52      0.20      0.15      
+
+
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1040:1144, 1144:1248] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1144:1248, 1040:1144] (64, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [0:64, 1040:1144, 1040:1144] (64, 104, 104)
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.01      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.01      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        2.27      2.72      2.60      2.66      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.02      0.19      0.11      0.10      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.08      0.04      0.04      
+
+TOTAL
+upstream                      10        2.59      3.01      2.82      2.84      
+downstream                    10        0.02      0.51      0.19      0.14      
+
+
+INFO:gunpowder.nodes.print_profiling_stats:
+Profiling Stats
+===============
+
+NODE                METHOD    COUNTS    MIN       MAX       MEAN      MEDIAN    
+IntensityScaleShift prepare   30        0.00      0.00      0.00      0.00      
+IntensityScaleShift process   30        0.00      0.02      0.01      0.01      
+Normalize           prepare   10        0.00      0.00      0.00      0.00      
+Normalize           process   10        0.00      0.01      0.01      0.01      
+Pad                 prepare   10        0.00      0.00      0.00      0.00      
+Pad                 process   10        0.00      0.00      0.00      0.00      
+Predict             prepare   10        0.00      0.00      0.00      0.00      
+Predict             process   10        2.29      2.72      2.60      2.65      
+Squeeze             prepare   20        0.00      0.00      0.00      0.00      
+Squeeze             process   20        0.01      0.01      0.01      0.01      
+Stack                         10        0.00      0.00      0.00      0.00      
+Unsqueeze           prepare   10        0.00      0.00      0.00      0.00      
+Unsqueeze           process   10        0.00      0.00      0.00      0.00      
+ZarrSource                    10        0.03      0.18      0.12      0.12      
+ZarrWrite           prepare   10        0.00      0.00      0.00      0.00      
+ZarrWrite           process   10        0.00      0.07      0.04      0.06      
+
+TOTAL
+upstream                      10        2.57      3.02      2.83      2.82      
+downstream                    10        0.01      0.49      0.18      0.20      
+
+
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 1838 (read_roi: [2160:5520, 3976:4760, 3976:4760] (3360, 784, 784), write_roi [2560:5120, 4160:4576, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 2692 (read_roi: [2160:5520, 4808:5592, 4392:5176] (3360, 784, 784), write_roi [2560:5120, 4992:5408, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 2104 (read_roi: [4720:8080, 3976:4760, 3976:4760] (3360, 784, 784), write_roi [5120:7680, 4160:4576, 4160:4576] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 3017 (read_roi: [2160:5520, 4808:5592, 4808:5592] (3360, 784, 784), write_roi [2560:5120, 4992:5408, 4992:5408] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4160:4576, 4160:4576] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1040:1144, 1040:1144] (61, 104, 104)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1248:1250, 1248:1250] (61, 2, 2)
+DEBUG:gunpowder.nodes.hdf5like_write_base:writing AFFS to voxel coordinates [64:125, 1248:1250, 1144:1248] (61, 2, 104)
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 2380 (read_roi: [4720:8080, 3976:4760, 4392:5176] (3360, 784, 784), write_roi [5120:7680, 4160:4576, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 2693 (read_roi: [4720:8080, 4392:5176, 4392:5176] (3360, 784, 784), write_roi [5120:7680, 4576:4992, 4576:4992] (2560, 416, 416))
+INFO:gunpowder.nodes.daisy_request_blocks:Processing block id: 2707 (read_roi: [4720:8080, 4808:5592, 3976:4760] (3360, 784, 784), write_roi [5120:7680, 4992:5408, 4160:4576] (2560, 416, 416))
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4576:4992, 4576:4992] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4160:4576, 4576:4992] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing
+WARNING:gunpowder.nodes.hdf5like_write_base:array AFFS with ROI [5120:7680, 4992:5408, 4160:4576] (2560, 416, 416) lies outside of dataset ROI [0:5000, 0:5000, 0:5000] (5000, 5000, 5000), skipping writing

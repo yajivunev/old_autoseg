@@ -1,0 +1,105 @@
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1355 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 6440
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1353 edges
+extracting segmentation
+Num nodes in merge tree: 2709
+max_level: 73
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 885 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 4197
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 883 edges
+extracting segmentation
+Num nodes in merge tree: 1769
+max_level: 87
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 322 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 1418
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 320 edges
+extracting segmentation
+Num nodes in merge tree: 643
+max_level: 35
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1315 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 6068
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1313 edges
+extracting segmentation
+Num nodes in merge tree: 2629
+max_level: 120
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1562 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 7193
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1560 edges
+extracting segmentation
+Num nodes in merge tree: 3123
+max_level: 124
+Finished allocating db

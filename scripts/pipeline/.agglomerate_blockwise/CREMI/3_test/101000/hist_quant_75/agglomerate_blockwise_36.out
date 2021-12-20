@@ -1,0 +1,231 @@
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 838 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 3663
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 836 edges
+extracting segmentation
+Num nodes in merge tree: 1675
+max_level: 146
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1780 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 7876
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1778 edges
+extracting segmentation
+Num nodes in merge tree: 3559
+max_level: 164
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 2426 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 12083
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 2424 edges
+extracting segmentation
+Num nodes in merge tree: 4851
+max_level: 183
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1868 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 8867
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1866 edges
+extracting segmentation
+Num nodes in merge tree: 3735
+max_level: 138
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1359 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 6091
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1357 edges
+extracting segmentation
+Num nodes in merge tree: 2717
+max_level: 130
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 2010 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 9460
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 2008 edges
+extracting segmentation
+Num nodes in merge tree: 4019
+max_level: 105
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 738 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 3435
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 736 edges
+extracting segmentation
+Num nodes in merge tree: 1475
+max_level: 103
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 782 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 3570
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 780 edges
+extracting segmentation
+Num nodes in merge tree: 1563
+max_level: 45
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 547 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 2503
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 545 edges
+extracting segmentation
+Num nodes in merge tree: 1093
+max_level: 59
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1270 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 5720
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1268 edges
+extracting segmentation
+Num nodes in merge tree: 2539
+max_level: 93
+Finished allocating db
+Re-using already compiled waterz version
+Preparing segmentation volume...
+counting regions and sizes...
+creating region graph for 1542 nodes
+creating statistics provider
+extracting region graph...
+Region graph number of edges: 7406
+merging until threshold 0
+computing initial scores
+merging until 0
+min edge score 0.00585938
+threshold exceeded
+merged 0 edges
+merging until threshold 1
+merging until 1
+min edge score 0.00585938
+merged 1540 edges
+extracting segmentation
+Num nodes in merge tree: 3083
+max_level: 139
+Finished allocating db

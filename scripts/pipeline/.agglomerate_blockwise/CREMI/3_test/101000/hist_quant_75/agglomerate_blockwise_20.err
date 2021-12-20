@@ -1,0 +1,28 @@
+INFO:root:['./workers/agglomerate_worker.py', '/scratch1/04101/vvenu/autoseg/scripts/pipeline/.agglomerate_blockwise/CREMI/3_test/101000/hist_quant_75/328263225220124127347525149551037291949.config']
+INFO:root:{'affs_file': '/scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr', 'affs_dataset': '/volumes/affs', 'fragments_file': '/scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr', 'fragments_dataset': '/volumes/fragments', 'block_directory': '/scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr/block_nodes', 'write_size': [840, 600, 600], 'merge_function': 'hist_quant_75'}
+INFO:root:Reading affs from /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+INFO:root:Reading fragments from /scratch1/04101/vvenu/autoseg/CREMI/01_data/3_test/101000/clahe_sample_B.zarr
+INFO:root:Opening RAG file...
+INFO:root:RAG file opened
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [1680:2520, 0:600, 600:1200] (840, 600, 600) with context of [1400:2800, -260:860, 340:1460] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 4492 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [1680:2520, 1800:2400, 1200:1800] (840, 600, 600) with context of [1400:2800, 1540:2660, 940:2060] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 7102 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [840:1680, 3000:3600, 1800:2400] (840, 600, 600) with context of [560:1960, 2740:3860, 1540:2660] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 8526 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [1680:2520, 0:600, 3000:3600] (840, 600, 600) with context of [1400:2800, -260:860, 2740:3860] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 8722 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [2520:3360, 1200:1800, 3600:4200] (840, 600, 600) with context of [2240:3640, 940:2060, 3340:4460] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 8504 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [2520:3360, 3000:3600, 3000:3600] (840, 600, 600) with context of [2240:3640, 2740:3860, 2740:3860] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 8276 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [4200:5000, 2400:3000, 2400:3000] (800, 600, 600) with context of [3920:5280, 2140:3260, 2140:3260] (1360, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 6219 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [3360:4200, 4800:5000, 0:600] (840, 200, 600) with context of [3080:4480, 4540:5260, -260:860] (1400, 720, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 2266 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [1680:2520, 4800:5000, 3000:3600] (840, 200, 600) with context of [1400:2800, 4540:5260, 2740:3860] (1400, 720, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 4394 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [840:1680, 600:1200, 4200:4800] (840, 600, 600) with context of [560:1960, 340:1460, 3940:5060] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 9917 edges
+INFO:lsd.parallel_aff_agglomerate:Agglomerating in block [2520:3360, 3000:3600, 4200:4800] (840, 600, 600) with context of [2240:3640, 2740:3860, 3940:5060] (1400, 1120, 1120)
+INFO:lsd.parallel_aff_agglomerate:merged 7287 edges
