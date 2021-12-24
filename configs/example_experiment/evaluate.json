@@ -1,0 +1,10 @@
+{
+    "fragments_dataset": "volumes/fragments",
+    "thresholds_step": 0.02,
+    "gt_file": "/scratch1/04101/vvenu/autoseg/example_experiment/01_data/sample_A.zarr",
+    "gt_dataset": "volumes/labels/neuron_ids",
+    "num_workers": 4,
+    "fragments_file": "/scratch1/04101/vvenu/autoseg/example_experiment/01_data/example_mtlsd_setup/35000/sample_A.zarr",
+    "thresholds_minmax": [0, 1],
+    "edges_collection": "edges_hist_quant_75"
+}

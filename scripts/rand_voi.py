@@ -1,6 +1,7 @@
 import daisy
 import logging
 import sys
+import time
 import numpy as np
 from funlib.evaluate import rand_voi
 
@@ -8,11 +9,11 @@ logging.basicConfig(level=logging.INFO)
 
 """ Script to evaluate clustering metrics (RAND,VOI,NVI,NID) between two 3d arrays. """
 
-def evaluate(
+def compute_rand_voi(
         truth,
         test):
 
-    logging.info("Evaluating... \n")
+    logging.info("Calculating RAND,VOI,NVI,NID... \n")
 
     voi_report = rand_voi(truth, test, return_cluster_scores=False)
     metrics = voi_report.copy()
@@ -31,12 +32,10 @@ def evaluate(
 
     nid = metrics['nid']
 
-
-    logging.info("RAND: %s", rand)
-    logging.info("VOI: %s", voi)
-    logging.info("NVI: %s", nvi)
-    logging.info("NID: %s", nid)
-
+    logging.info(f"RAND: {rand}, RAND split: {rand_split}, RAND merge: {rand_merge}")
+    logging.info(f"VOI: {voi}, VOI split: {voi_split}, VOI merge: {voi_merge}")
+    logging.info(f"NVI: {nvi}, NVI split: {nvi_split}, NVI merge: {nvi_merge}")
+    logging.info(f"NID: {nid}")
 
 def ds_wrapper(in_file, in_ds):
 
@@ -64,4 +63,4 @@ if __name__ == "__main__":
     logging.info("Converting seg to nd array...")
     seg = seg.to_ndarray()
 
-    evaluate(gt,seg)
+    compute_rand_voi(gt,seg)
