@@ -15,7 +15,7 @@ from pymongo import MongoClient
 
 #logging.basicConfig(level=logging.INFO)
 
-""" Script to evaluate VOI against ground truth for a fragments dataset at different 
+""" Script to evaluate VOI,NVI,NID against ground truth for a fragments dataset at different 
 agglomeration thresholds and find the best threshold. """
 
 base_dir = "/scratch1/04101/vvenu/autoseg"
