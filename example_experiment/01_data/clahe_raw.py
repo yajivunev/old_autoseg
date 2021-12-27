@@ -6,21 +6,14 @@ from skimage.exposure import equalize_adapthist as clahe
 """ Script to perform CLAHE on volumes/raw in a zarr directory. """
 
 if __name__ == '__main__':
-    input_zarr = str(sys.argv[1]) #path to input zarr directory
-    output_zarr = str(sys.argv[2]) #path to output zarr directory
+    input_zarr = str(sys.argv[1]) #path to zarr directory
+    raw_ds = str(sys.argv[2]) #raw dataset name
 
-    input_zarr = zarr.open(input_zarr,"r")
-    output_zarr = zarr.open(output_zarr,"w")
+    input_zarr = zarr.open(input_zarr,"r+")
 
     print("reading input zarr datasets...")
 
-    raw = input_zarr['volumes/raw']
-    neuron_ids = input_zarr['volumes/labels/neuron_ids']
-    mask = input_zarr['volumes/labels/mask']
-    
-    assert raw.shape == neuron_ids.shape == mask.shape, "dataset shapes are not the same"
-    assert raw.attrs['resolution'] == neuron_ids.attrs['resolution'] == mask.attrs['resolution'], "resolutions are not the same."
-    assert raw.attrs['offset'] == neuron_ids.attrs['offset'] == mask.attrs['offset'], "offsets are not the same."
+    raw = input_zarr[raw_ds]
     
     resolution = raw.attrs['resolution']    
     offset = raw.attrs['offset']
@@ -37,11 +30,9 @@ if __name__ == '__main__':
     print("writing output zarr...")
 
     for ds_name, data in [
-            ('volumes/raw', clahe_raw[:]),
-            ('volumes/labels/neuron_ids', neuron_ids[:])]:,
-            ('volumes/labels/mask', mask[:])]:
+            (raw_ds+'_clahe', clahe_raw[:])]:
 
-        ds_out = output_zarr.create_dataset(
+        ds_out = input_zarr.create_dataset(
                     ds_name,
                     data=data,
                     compressor=zarr.get_codec(

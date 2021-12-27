@@ -197,7 +197,7 @@ def predict_worker(
         json.dump(config, f)
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
-    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+    #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
     #command = ["python -u",predict_script,config_file]
     #daisy.call(command='python -u {} {}'.format(predict_script,config_file), log_out=log_out, log_err=log_err)
