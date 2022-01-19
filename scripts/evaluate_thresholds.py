@@ -6,6 +6,7 @@ import json
 import logging
 import lsd
 import numpy as np
+import time
 import os
 import sys
 import waterz
@@ -13,7 +14,7 @@ from funlib.evaluate import rand_voi
 from funlib.segment.arrays import replace_values
 from pymongo import MongoClient
 
-#logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 """ Script to evaluate VOI,NVI,NID against ground truth for a fragments dataset at different 
 agglomeration thresholds and find the best threshold. """

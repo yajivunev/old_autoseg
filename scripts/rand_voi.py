@@ -15,7 +15,11 @@ def compute_rand_voi(
 
     logging.info("Calculating RAND,VOI,NVI,NID... \n")
 
+    time_start = time.time()
+
     voi_report = rand_voi(truth, test, return_cluster_scores=False)
+    
+    print("time to compute RAND VOI: ", time.time() - time_start,"\n")
     metrics = voi_report.copy()
 
     rand_split = metrics['rand_split']
