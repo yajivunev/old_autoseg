@@ -91,24 +91,6 @@ def calc_max_padding(
 
     return max_padding.get_begin()
 
-class UnmaskBackground(BatchFilter):
-
-    ''' 
-    We want to mask out losses for LSDs at the boundary
-    between neurons while not simultaneously masking out
-    losses for LSDs at raw=0. Therefore we should add
-    (1 - background mask) to gt_lsds_scale after we add
-    the LSDs in the AddLocalShapeDescriptor node.
-    '''
-
-    def __init__(self, target_mask, background_mask):
-        self.target_mask = target_mask
-        self.background_mask = background_mask
-    def process(self, batch, request):
-        batch[self.target_mask].data = np.logical_or(
-                batch[self.target_mask].data,
-                np.logical_not(batch[self.background_mask].data))
-
 def train_until(max_iteration):
 
     if tf.train.latest_checkpoint('.'):
@@ -162,7 +144,8 @@ def train_until(max_iteration):
     snapshot_request = BatchRequest({
         lsds: request[gt_lsds],
         affs: request[gt_affs],
-        affs_gradient: request[gt_affs]
+        affs_gradient: request[gt_affs],
+        lsds_gradient: request[gt_lsds]
     })
 
     data_sources = tuple(
@@ -210,7 +193,6 @@ def train_until(max_iteration):
             mask=gt_lsds_scale,
             sigma=100,
             downsample=2) +
-        UnmaskBackground(gt_lsds_scale, labels_mask) +
         AddAffinities(
             neighborhood,
             labels=labels,
