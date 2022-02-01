@@ -26,9 +26,9 @@ if __name__ == '__main__':
     resolution = raw.attrs['resolution']    
     offset = raw.attrs['offset']
 
-    raw = raw[z_start:z_start+z_shape,z_start:z_start+y_shape,y_start:x_start+x_shape]
-    labels = labels[z_start:z_start+z_shape,z_start:z_start+y_shape,y_start:x_start+x_shape]
-    mask = mask[z_start:z_start+z_shape,z_start:z_start+y_shape,y_start:x_start+x_shape]
+    raw = raw[z_start:z_start+z_shape,y_start:ystart+y_shape,x_start:x_start+x_shape]
+    labels = labels[z_start:z_start+z_shape,y_start:y_start+y_shape,x_start:x_start+x_shape]
+    mask = mask[z_start:z_start+z_shape,y_start:y_start+y_shape,x_start:x_start+x_shape]
 
     print("writing output zarr...")
 
