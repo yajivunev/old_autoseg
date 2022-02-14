@@ -5,8 +5,7 @@ import json
 import sys
 import time
 
-logging.basicConfig(level=logging.INFO)
-
+logging.getLogger().setLevel(logging.DEBUG)
 
 def extract_fragments_worker(input_config):
 
@@ -66,32 +65,32 @@ def extract_fragments_worker(input_config):
 
     while True:
 
-        block = client.acquire_block()
+        with client.acquire_block() as block:
 
-        if block is None:
-            break
+            if block is None:
+                break
 
-        start = time.time()
+            start = time.time()
 
-        logging.info("block read roi begin: %s", block.read_roi.get_begin())
-        logging.info("block read roi shape: %s", block.read_roi.get_shape())
-        logging.info("block write roi begin: %s", block.write_roi.get_begin())
-        logging.info("block write roi shape: %s", block.write_roi.get_shape())
+            logging.info("block read roi begin: %s", block.read_roi.offset)
+            logging.info("block read roi shape: %s", block.read_roi.shape)
+            logging.info("block write roi begin: %s", block.write_roi.offset)
+            logging.info("block write roi shape: %s", block.write_roi.shape)
 
-        lsd.watershed_in_block(
-            affs,
-            block,
-            context,
-            rag_provider,
-            fragments,
-            num_voxels_in_block=num_voxels_in_block,
-            mask=mask,
-            fragments_in_xy=fragments_in_xy,
-            epsilon_agglomerate=epsilon_agglomerate,
-            filter_fragments=filter_fragments,
-            replace_sections=replace_sections)
+            lsd.watershed_in_block(
+                affs,
+                block,
+                context,
+                rag_provider,
+                fragments,
+                num_voxels_in_block=num_voxels_in_block,
+                mask=mask,
+                fragments_in_xy=fragments_in_xy,
+                epsilon_agglomerate=epsilon_agglomerate,
+                filter_fragments=filter_fragments,
+                replace_sections=replace_sections)
 
-        client.release_block(block, ret=0)
+            client.release_block(block)
 
 if __name__ == '__main__':
 

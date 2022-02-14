@@ -7,8 +7,9 @@ import os
 import daisy
 import sys
 import time
+import subprocess
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 #logging.getLogger('lsd.parallel_fragments').setLevel(logging.DEBUG)
 
 def extract_fragments(
@@ -50,8 +51,6 @@ def extract_fragments(
     logging.info("Reading affs from %s", affs_file)
     affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    network_dir = os.path.join(experiment, setup, str(iteration))
-
     fragments_file = affs_file
     block_directory = os.path.join(fragments_file, 'block_nodes')
 
@@ -70,16 +69,18 @@ def extract_fragments(
     context = daisy.Coordinate(context)
     total_roi = affs.roi.grow(context, context)
 
-    read_roi = daisy.Roi((0,)*affs.roi.dims(), block_size).grow(context, context)
-    write_roi = daisy.Roi((0,)*affs.roi.dims(), block_size)
+    read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
+    write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
 
-    num_voxels_in_block = (write_roi/affs.voxel_size).size()
+    num_voxels_in_block = (write_roi/affs.voxel_size).size
 
-    daisy.run_blockwise(
+    task = daisy.Task(
+        'ExtractFragmentsBlockwiseTask',
         total_roi=total_roi,
         read_roi=read_roi,
         write_roi=write_roi,
-        process_function=lambda: start_worker(
+        process_function=lambda b: start_worker(
+            b,
             affs_file,
             affs_dataset,
             fragments_file,
@@ -88,7 +89,6 @@ def extract_fragments(
             write_roi,
             context,
             fragments_in_xy,
-            network_dir,
             epsilon_agglomerate,
             mask_file,
             mask_dataset,
@@ -100,7 +100,10 @@ def extract_fragments(
         read_write_conflict=False,
         fit='shrink')
 
+    return task
+
 def start_worker(
+        block,
         affs_file,
         affs_dataset,
         fragments_file,
@@ -109,7 +112,6 @@ def start_worker(
         write_roi,
         context,
         fragments_in_xy,
-        network_dir,
         epsilon_agglomerate,
         mask_file,
         mask_dataset,
@@ -118,11 +120,9 @@ def start_worker(
         num_voxels_in_block,
         **kwargs):
 
-    worker_id = daisy.Context.from_env().worker_id
+    worker_id = int(daisy.Context.from_env()['worker_id'])
 
     logging.info("worker %s started...", worker_id)
-
-    output_dir = os.path.join('.extract_fragments_blockwise', network_dir)
 
     logging.info('epsilon_agglomerate: %s', epsilon_agglomerate)
     logging.info('mask_file: %s', mask_file)
@@ -135,9 +135,6 @@ def start_worker(
     except:
         pass
 
-    log_out = os.path.join(output_dir, 'extract_fragments_blockwise_{}.out'.format(worker_id))
-    log_err = os.path.join(output_dir, 'extract_fragments_blockwise_{}.err'.format(worker_id))
-
     config = {
             'affs_file': affs_file,
             'affs_dataset': affs_dataset,
@@ -145,7 +142,7 @@ def start_worker(
             'fragments_dataset': fragments_dataset,
             'context': context,
             'block_directory': block_directory,
-            'write_size': write_roi.get_shape(),
+            'write_size': write_roi.shape,
             'fragments_in_xy': fragments_in_xy,
             'epsilon_agglomerate': epsilon_agglomerate,
             'mask_file': mask_file,
@@ -158,7 +155,7 @@ def start_worker(
     config_str = ''.join(['%s'%(v,) for v in config.values()])
     config_hash = abs(int(hashlib.md5(config_str.encode()).hexdigest(), 16))
 
-    config_file = os.path.join(output_dir, '%d.json'%config_hash)
+    config_file = os.path.join('.','daisy_logs','ExtractFragmentsBlockwiseTask', '%d.json'%config_hash)
 
     with open(config_file, 'w') as f:
         json.dump(config, f)
@@ -171,10 +168,16 @@ def start_worker(
     
     os.environ["CUDA_VISIBLE_DEVICES"] = "%s"%worker_id
 
-    daisy.call(
-        command,
-        log_out=log_out,
-        log_err=log_err)
+    try:
+        subprocess.check_call(
+            ' '.join(command),
+            shell=True)
+    except subprocess.CalledProcessError as exc:
+        raise Exception(
+            "Calling %s failed with return code %s, stderr in %s" %
+            (' '.join(command), exc.returncode, sys.stderr.name))
+    except KeyboardInterrupt:
+        raise Exception("Canceled by SIGINT")
 
 if __name__ == "__main__":
 
@@ -185,7 +188,12 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    extract_fragments(**config)
+    task = extract_fragments(**config)
+
+    done = daisy.run_blockwise([task])
+
+    if not done:
+        raise RuntimeError("ExtractFragments failed for (at least) one block")
 
     end = time.time()
 

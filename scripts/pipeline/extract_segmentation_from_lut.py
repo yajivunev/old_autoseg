@@ -6,8 +6,9 @@ import os
 import sys
 import time
 from funlib.segment.arrays import replace_values
+import subprocess
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 def extract_segmentation(
         fragments_file,
@@ -99,7 +100,8 @@ def extract_segmentation(
     num_segments = len(np.unique(lut[1]))
     logging.info(f"Relabelling fragments to {num_segments} segments")
 
-    daisy.run_blockwise(
+    task = daisy.Task(
+        'ExtractSegmentationTask',
         total_roi,
         read_roi,
         write_roi,
@@ -111,6 +113,8 @@ def extract_segmentation(
             lut),
         fit='shrink',
         num_workers=num_workers)
+
+    return task
 
 def segment_in_block(
         block,
@@ -138,5 +142,12 @@ if __name__ == "__main__":
         config = json.load(f)
 
     start = time.time()
-    extract_segmentation(**config)
+    
+    task = extract_segmentation(**config)
+
+    done = daisy.run_blockwise([task])
+
+    if not done:
+        raise RuntimeError("Extraction of segmentation from LUT failed for (at least) one block")
+
     logging.info(f"Took {time.time() - start} seconds to extract segmentation from LUT")

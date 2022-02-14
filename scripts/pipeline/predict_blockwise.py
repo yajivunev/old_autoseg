@@ -7,9 +7,10 @@ import daisy
 import sys
 import time
 import datetime
+import subprocess
 
-logging.basicConfig(level=logging.INFO)
-#logging.getLogger('daisy').setLevel(logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 def predict_blockwise(
         base_dir,
@@ -48,7 +49,6 @@ def predict_blockwise(
     experiment_dir = os.path.join(base_dir, experiment)
     data_dir = os.path.join(experiment_dir, '01_data')
     train_dir = os.path.join(experiment_dir, '02_train')
-    network_dir = os.path.join(experiment, setup, str(iteration))
 
     raw_file = os.path.abspath(os.path.join(data_dir,file_name))
     out_file = os.path.abspath(os.path.join(data_dir, setup, str(iteration), file_name))
@@ -106,16 +106,16 @@ def predict_blockwise(
 
     logging.info('Starting block-wise processing...')
 
-
     # process block-wise
-    succeeded = daisy.run_blockwise(
+    task = daisy.Task(
+        'PredictBlockwiseTask',
         input_roi,
         block_read_roi,
         block_write_roi,
-        process_function=lambda: predict_worker(
+        process_function=lambda b: predict_worker(
+            b,
             experiment,
             setup,
-            network_dir,
             iteration,
             raw_file,
             raw_dataset,
@@ -127,15 +127,15 @@ def predict_blockwise(
         check_function = None,
         num_workers=num_workers,
         read_write_conflict=False,
+        max_retries=5,
         fit='overhang')
 
-    if not succeeded:
-        raise RuntimeError("Prediction failed for (at least) one block")
+    return task
 
 def predict_worker(
+        block,
         experiment,
         setup,
-        network_dir,
         iteration,
         raw_file,
         raw_dataset,
@@ -173,19 +173,14 @@ def predict_worker(
     config_hash = abs(int(hashlib.md5(config_str.encode()).hexdigest(), 16))
     #context_str = os.environ['DAISY_CONTEXT']
 
-    worker_id = daisy.Context.from_env().worker_id
-
-    output_dir = os.path.join('.predict_blockwise', network_dir)
-
+    worker_id = int(daisy.Context.from_env()['worker_id'])
+    
     try:
         os.makedirs(output_dir)
     except:
         pass
 
-    config_file = os.path.join(output_dir, '%d.config'%config_hash)
-
-    log_out = os.path.join(output_dir, 'predict_blockwise_{}.out'.format(worker_id))
-    log_err = os.path.join(output_dir, 'predict_blockwise_{}.err'.format(worker_id))
+    config_file = os.path.join('.','daisy_logs','PredictBlockwiseTask', '%d.config'%config_hash)
 
     logging.info('Running block with config %s...'%config_file)
 
@@ -197,19 +192,23 @@ def predict_worker(
         json.dump(config, f)
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
-    #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
-    #command = ["python -u",predict_script,config_file]
-    #daisy.call(command='python -u {} {}'.format(predict_script,config_file), log_out=log_out, log_err=log_err)
-    daisy.call(command,log_out=log_out,log_err=log_err)
+    try:
+        subprocess.check_call(
+            ' '.join(command),
+            shell=True)
+    except subprocess.CalledProcessError as exc:
+        raise Exception(
+            "Calling %s failed with return code %s, stderr in %s" %
+            (' '.join(command), exc.returncode, sys.stderr.name))
+    except KeyboardInterrupt:
+        raise Exception("Canceled by SIGINT")
 
     logging.info('daisy command called')
 
     # if things went well, remove temporary files
     # os.remove(config_file)
-    # os.remove(log_out)
-    # os.remove(log_err)
-
 
 if __name__ == "__main__":
 
@@ -220,7 +219,12 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    predict_blockwise(**config)
+    task = predict_blockwise(**config)
+
+    succeeded = daisy.run_blockwise([task])
+
+    if not succeeded:
+        raise RuntimeError("Prediction failed for (at least) one block")
 
     end = time.time()
 

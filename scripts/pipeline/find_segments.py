@@ -8,7 +8,7 @@ import sys
 import time
 from funlib.segment.graphs.impl import connected_components
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 def find_segments(
         fragments_file,
@@ -65,7 +65,7 @@ def find_segments(
             roi_offset,
             roi_shape)
 
-    write_roi = daisy.Roi((0,)*roi.dims(), block_size)
+    write_roi = daisy.Roi((0,)*roi.dims, block_size)
     
     block_directory = os.path.join(fragments_file, 'block_nodes')
 
@@ -80,8 +80,9 @@ def find_segments(
     
     node_attrs, edge_attrs = graph_provider.read_blockwise(
         roi,
-        block_size=daisy.Coordinate(block_size),
-        num_workers=num_workers)
+        #block_size=daisy.Coordinate(block_size),
+        block_size=roi.shape/2,
+        num_workers=1)
 
     logging.info(f"Read graph in {time.time() - start}")
 
@@ -118,40 +119,64 @@ def find_segments(
 
     start = time.time()
 
-    for threshold in thresholds:
+    task = daisy.Task(
+        'FindSegmentsTask',
+        roi,
+        roi,
+        roi,
+        process_function=lambda: get_connected_components(
+            nodes,
+            edges,
+            scores,
+            thresholds,
+            edges_collection,
+            out_dir),
+        check_function=None,
+        num_workers=1,
+        read_write_conflict=False,
+        fit='shrink')
 
-        get_connected_components(
-                nodes,
-                edges,
-                scores,
-                threshold,
-                edges_collection,
-                out_dir)
+    start = time.time()
+    done = daisy.run_blockwise([task])
 
-        logging.info(f"Created and stored lookup tables in {time.time() - start}")
+    if not done:
+        raise RuntimeError("FindSegmentsTask failed for (at least) one block")
+
+    logging.info(f"Created and stored lookup tables in {time.time() - start}")
 
 def get_connected_components(
         nodes,
         edges,
         scores,
-        threshold,
+        thresholds,
         edges_collection,
         out_dir,
         **kwargs):
 
-    logging.info(f"Getting CCs for threshold {threshold}...")
-    components = connected_components(nodes, edges, scores, threshold)
+    client = daisy.Client()
 
-    logging.info(f"Creating fragment-segment LUT for threshold {threshold}...")
-    lut = np.array([nodes, components])
+    while True:
 
-    logging.info(f"Storing fragment-segment LUT for threshold {threshold}...")
+        with client.acquire_block() as block:
 
-    lookup = f"seg_{edges_collection}_{int(threshold*100)}"
+            if block is None:
+                break
 
-    out_file = os.path.join(out_dir, lookup)
+            for threshold in thresholds:
 
-    np.savez_compressed(out_file, fragment_segment_lut=lut)
+                logging.info(f"Getting CCs for threshold {threshold}...")
+                components = connected_components(nodes, edges, scores, threshold)
+
+                logging.info(f"Creating fragment-segment LUT for threshold {threshold}...")
+                lut = np.array([nodes, components])
+
+                logging.info(f"Storing fragment-segment LUT for threshold {threshold}...")
+
+                lookup = f"seg_{edges_collection}_{int(threshold*100)}"
+
+                out_file = os.path.join(out_dir, lookup)
+
+                np.savez_compressed(out_file, fragment_segment_lut=lut)
 
 if __name__ == "__main__":
 

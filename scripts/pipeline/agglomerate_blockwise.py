@@ -7,8 +7,9 @@ import os
 import daisy
 import sys
 import time
+import subprocess
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 # logging.getLogger('lsd.parallel_fragments').setLevel(logging.DEBUG)
 # logging.getLogger('daisy.persistence.mongodb_graph_provider').setLevel(logging.DEBUG)
 #logging.getLogger('daisy').setLevel(logging.DEBUG)
@@ -54,8 +55,6 @@ def agglomerate(
     logging.info("Reading affs from %s", affs_file)
     affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    network_dir = os.path.join(experiment, setup, str(iteration), merge_function)
-
     logging.info("Reading fragments from %s", fragments_file)
     fragments = daisy.open_ds(fragments_file, fragments_dataset, mode='r')
 
@@ -64,27 +63,34 @@ def agglomerate(
     context = daisy.Coordinate(context)
     total_roi = affs.roi.grow(context, context)
 
-    read_roi = daisy.Roi((0,)*affs.roi.dims(), block_size).grow(context, context)
-    write_roi = daisy.Roi((0,)*affs.roi.dims(), block_size)
+    read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
+    write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
 
-    daisy.run_blockwise(
+    task = daisy.Task(
+        'AgglomerateBlockwiseTask',
         total_roi,
         read_roi,
         write_roi,
-        process_function=lambda: start_worker(
+        process_function=lambda b: start_worker(
+            b,
             affs_file,
             affs_dataset,
             fragments_file,
             fragments_dataset,
             block_directory,
             write_roi,
-            merge_function,
-            network_dir),
+            merge_function),
         num_workers=num_workers,
         read_write_conflict=False,
         fit='shrink')
 
+    #done = daisy.run_blockwise([task])
+
+
+    return task
+
 def start_worker(
+        block,
         affs_file,
         affs_dataset,
         fragments_file,
@@ -92,22 +98,16 @@ def start_worker(
         block_directory,
         write_roi,
         merge_function,
-        network_dir,
         **kwargs):
 
-    worker_id = daisy.Context.from_env().worker_id
+    worker_id = int(daisy.Context.from_env()['worker_id'])
 
     logging.info("worker %s started...", worker_id)
-
-    output_dir = os.path.join('.agglomerate_blockwise', network_dir)
 
     try:
         os.makedirs(output_dir)
     except:
         pass
-
-    log_out = os.path.join(output_dir, 'agglomerate_blockwise_{}.out'.format(worker_id))
-    log_err = os.path.join(output_dir, 'agglomerate_blockwise_{}.err'.format(worker_id))
 
     config = {
             'affs_file': affs_file,
@@ -122,7 +122,7 @@ def start_worker(
     config_str = ''.join(['%s'%(v,) for v in config.values()])
     config_hash = abs(int(hashlib.md5(config_str.encode()).hexdigest(), 16))
 
-    config_file = os.path.join(output_dir, '%d.config'%config_hash)
+    config_file = os.path.join('daisy_logs', 'AgglomerateBlockwiseTask', '%d.config'%config_hash)
 
     with open(config_file, 'w') as f:
         json.dump(config, f)
@@ -135,10 +135,16 @@ def start_worker(
 
     command = ["python -u",os.path.join('.', worker),os.path.abspath(config_file)]
 
-    daisy.call(
-        command,
-        log_out=log_out,
-        log_err=log_err)
+    try:
+        subprocess.check_call(
+            ' '.join(command),
+            shell=True)
+    except subprocess.CalledProcessError as exc:
+        raise Exception(
+            "Calling %s failed with return code %s, stderr in %s" %
+            (' '.join(command), exc.returncode, sys.stderr.name))
+    except KeyboardInterrupt:
+        raise Exception("Canceled by SIGINT")
 
 def check_block(blocks_agglomerated, block):
 
@@ -155,7 +161,12 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    agglomerate(**config)
+    task = agglomerate(**config)
+
+    done = daisy.run_blockwise([task])
+
+    if not done:
+        raise RuntimeError("Agglomeration failed for (at least) one block")
 
     end = time.time()
 

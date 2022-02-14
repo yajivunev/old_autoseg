@@ -6,7 +6,7 @@ import pymongo
 import sys
 import time
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 def agglomerate_worker(input_config):
 
@@ -61,23 +61,22 @@ def agglomerate_worker(input_config):
 
     while True:
 
-        block = client.acquire_block()
+        with client.acquire_block() as block:
 
-        if block is None:
-            break
+            if block is None:
+                break
 
-        start = time.time()
+            start = time.time()
 
-        lsd.agglomerate_in_block(
-                affs,
-                fragments,
-                rag_provider,
-                block,
-                merge_function=waterz_merge_function,
-                threshold=1.0)
+            lsd.agglomerate_in_block(
+                    affs,
+                    fragments,
+                    rag_provider,
+                    block,
+                    merge_function=waterz_merge_function,
+                    threshold=1.0)
 
-        client.release_block(block, ret=0)
-
+            client.release_block(block)
 
 if __name__ == '__main__':
 
