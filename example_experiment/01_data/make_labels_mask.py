@@ -10,12 +10,11 @@ if __name__ == "__main__":
 
     labels = daisy.open_ds(input_zarr,labels_ds)
 
-    unlabelled = labels.to_ndarray()
-    unlabelled[unlabelled > 0] = 1
+    labels_mask = np.ones_like(labels.data,dtype=np.uint8)
 
     voxel_size = labels.voxel_size
     roi = labels.roi
 
-    unlabelled_ds = daisy.prepare_ds(input_zarr,'unlabelled',roi,voxel_size,dtype=np.uint8)
+    mask_ds = daisy.prepare_ds(input_zarr,'labels_mask',roi,voxel_size,dtype=np.uint8)
 
-    unlabelled_ds[roi] = unlabelled
+    mask_ds[roi] = labels_mask

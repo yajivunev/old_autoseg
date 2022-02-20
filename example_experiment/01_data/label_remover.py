@@ -1,8 +1,26 @@
 import sys
 import zarr
+import csv
+import logging
+import daisy
 import numpy as np
 
 """ Script to remove labels provided in a labeled dataset. """
+
+def remove_in_block(
+        block,
+        labels_list,
+        in_ds,
+        out_ds):
+
+    logging.info('Fetching data in block %s' %block.read_roi)
+    
+    removed = in_ds[block.read_roi].to_ndarray()
+    labels_list = np.array(labels_list)
+
+    removed[in1d_alternative_2D(removed,labels_list)] = 0
+
+    out_ds[block.write_roi] = removed
 
 def in1d_alternative_2D(npArr, arr):
     idx = np.searchsorted(arr, npArr.ravel())
@@ -10,44 +28,41 @@ def in1d_alternative_2D(npArr, arr):
     return arr[idx].reshape(npArr.shape) == npArr
 
 if __name__ == '__main__':
+    
     input_zarr = str(sys.argv[1]) #path to zarr directory
-    labels_ds = str(sys.argv[2]) #labels dataset name
-    n=len(sys.argv[3]) #third arg should be list of labels to be removed without spaces
-    a=sys.argv[3][1:n-1]
-    labels_list=a.split(',')
-    labels_list = list(map(int, labels_list))
-
-    input_zarr = zarr.open(input_zarr,"r+")
+    ds_name = str(sys.argv[2]) #dataset name with integer dtype
 
     print("reading input zarr datasets...")
 
-    labels = input_zarr[labels_ds]
+    in_ds = daisy.open_ds(input_zarr,ds_name)
     
-    resolution = labels.attrs['resolution']    
-    offset = labels.attrs['offset']
+    resolution = in_ds.voxel_size    
+    roi = in_ds.roi
 
     print("Unlabelling given labels...")
 
-    unlabelled = np.array(labels)
-    labels_list = np.array(labels_list)
+    labels_list = [] #insert integer labels to be removed here, or keep every n-th id
+    #labels_list = list(np.unique(in_ds.data))
+    #labels_list = [id for id in labels_list if id not in labels_list[::3]][2:]
 
-    unlabelled[in1d_alternative_2D(unlabelled,labels_list)] = 0
+    out_ds = daisy.prepare_ds(
+            input_zarr,
+            'labels',
+            roi,
+            resolution,
+            dtype=in_ds.dtype)
 
-    #for label in labels_list:
-    #    unlabelled[unlabelled == label] = 0
+    task = daisy.Task(
+            'LabelRemoveTask',
+            roi,
+            daisy.Roi((0, 0, 0), (2000, 2000, 2000)),
+            daisy.Roi((0, 0, 0), (2000, 2000, 2000)),
+            process_function=lambda b: remove_in_block(
+                b,
+                labels_list,
+                in_ds,
+                out_ds),
+            fit='shrink',
+            num_workers=56)
 
-    print("writing to zarr...")
-
-    for ds_name, data in [
-            (labels_ds+'_cleaned', unlabelled)]:
-
-        ds_out = input_zarr.create_dataset(
-                    ds_name,
-                    data=data,
-                    compressor=zarr.get_codec(
-                        {'id': 'gzip', 'level': 5}
-                    ))
-
-        ds_out.attrs['offset'] = offset
-        ds_out.attrs['resolution'] = resolution
-
+    daisy.run_blockwise([task])
