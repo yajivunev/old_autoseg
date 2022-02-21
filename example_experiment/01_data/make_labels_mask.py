@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     labels = daisy.open_ds(input_zarr,labels_ds)
 
-    labels_mask = np.ones_like(labels.data,dtype=np.uint8)
+    labels_mask = np.ones_like(labels.to_ndarray(),dtype=np.uint8)
 
     voxel_size = labels.voxel_size
     roi = labels.roi

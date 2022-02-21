@@ -1,5 +1,5 @@
-import zarr
 from PIL import Image
+import daisy
 import sys
 import numpy as np
 import glob
@@ -31,16 +31,19 @@ def images_to_zarr(
 
     print("Writing to Zarr...")
 
-    output_zarr = zarr.open(output_zarr,"a")
+    voxel_size = daisy.Coordinate([res_z,res_y_res_x])
+    raw_shape = daisy.Coordinate(raw.shape)
 
-    ds_out = output_zarr.create_dataset(
+    roi = daisy.Roi(([0,]*3),(raw_shape*voxel_size))
+
+    ds_out = daisy.prepare_ds(
+                output_zarr,
                 'raw',
-                data=raw,
-                compressor=zarr.get_codec(
-                    {'id': 'gzip', 'level': 5}
-                ))
-    ds_out.attrs['offset'] = [0,0,0]
-    ds_out.attrs['resolution'] = [res_z,res_y,res_x]
+                roi,
+                voxel_size,
+                dtype=np.uint8)
+
+    ds_out[roi] = raw
 
 if __name__ == "__main__":
 
