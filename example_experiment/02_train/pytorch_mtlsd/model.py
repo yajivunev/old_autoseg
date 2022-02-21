@@ -35,22 +35,45 @@ class MtlsdModel(torch.nn.Module):
 
         return lsds,affs
 
+
 class WeightedMSELoss(torch.nn.MSELoss):
 
     def __init__(self):
         super(WeightedMSELoss, self).__init__()
 
-    def forward(self, lsds_prediction, lsds_target, lsds_weights, affs_prediction, affs_target, affs_weights,):
+    def _calc_loss(self, pred, target, weights):
 
-        loss1 = super(WeightedMSELoss, self).forward(
-                lsds_prediction*lsds_weights,
-                lsds_target*lsds_weights)
+        scale = (weights * (pred - target) ** 2)
 
-        loss2 = super(WeightedMSELoss, self).forward(
-            affs_prediction*affs_weights,
-            affs_target*affs_weights)
+        if len(torch.nonzero(scale)) != 0:
+
+            loss = torch.mean(
+                    torch.masked_select(
+                        scale,
+                        torch.gt(weights, 0)
+                        )
+                    )
+
+        else:
+
+            loss = torch.mean(scale)
+
+        return loss
+
+    def forward(
+            self,
+            lsds_prediction,
+            lsds_target,
+            lsds_weights,
+            affs_prediction,
+            affs_target,
+            affs_weights):
+
+        loss1 = self._calc_loss(lsds_prediction, lsds_target, lsds_weights)
+        loss2 = self._calc_loss(affs_prediction, affs_target, affs_weights)
 
         return loss1 + loss2
+
 
 #util functions
 
