@@ -6,7 +6,7 @@ import os
 import sys
 import torch
 
-from model import MtlsdModel, WeightedMSELoss, UnmaskBackground, calc_max_padding
+from model import MtlsdModel, WeightedMSELoss, calc_max_padding
 
 from gunpowder import *
 from gunpowder.ext import torch
@@ -57,7 +57,8 @@ def train(
     optimizer = torch.optim.Adam(
             model.parameters(),
             lr=0.5e-4,
-            betas=(0.95,0.999))
+            betas=(0.95,0.999),
+            eps=1e-08)
 
     if 'output_shape' not in kwargs:
         output_shape = model.forward(torch.empty(size=[1,1]+input_shape))[0].shape[2:]
@@ -155,8 +156,6 @@ def train(
             mask=lsds_weights,
             sigma=sigma,
             downsample=2)
-
-    train_pipeline += UnmaskBackground(lsds_weights, labels_mask)
 
     train_pipeline += AddAffinities(
             neighborhood,

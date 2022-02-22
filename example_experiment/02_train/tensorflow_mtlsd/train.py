@@ -20,6 +20,7 @@ data_dir = '../../01_data'
 #]
 
 neighborhood = [[-1, 0, 0], [0, -1, 0], [0, 0, -1]]
+voxel_size = [50,2,2]
 
 # needs to match order of samples (small to large)
 
@@ -131,7 +132,7 @@ def train_until(max_iteration):
     input_shape = config['input_shape']
     output_shape = config['output_shape']
 
-    voxel_size = Coordinate((50, 2, 2))
+    voxel_size = Coordinate(voxel_size)
     input_size = Coordinate(input_shape)*voxel_size
     output_size = Coordinate(output_shape)*voxel_size
 
@@ -198,7 +199,7 @@ def train_until(max_iteration):
             mask=gt_lsds_scale,
             sigma=100,
             downsample=2) +
-        UnmaskBackground(gt_lsds_scale, labels_mask) +
+        #UnmaskBackground(gt_lsds_scale, labels_mask) +
         AddAffinities(
             neighborhood,
             labels=labels,

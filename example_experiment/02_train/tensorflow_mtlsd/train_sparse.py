@@ -26,6 +26,8 @@ data_dir = '../../01_data'
 
 neighborhood = [[-1, 0, 0], [0, -1, 0], [0, 0, -1]]
 
+voxel_size = [50,2,2]
+
 # needs to match order of samples (small to large)
 
 def calc_max_padding(
@@ -40,7 +42,8 @@ def calc_max_padding(
         output_size (array-like of ``int``):
             output size of network, in world units (a gunpowder coordinate)
         voxel_size (array-like of ``int``):
-            voxel size to use (a gunpowder coordinate)
+        
+        voxel_size = [50,2,2]voxel size to use (a gunpowder coordinate)
         neighborhood (``list`` of array-like, optional):
             affinity neighborhood to use.
         sigma (``int``, optional):
@@ -120,7 +123,7 @@ def train_until(max_iteration):
     input_shape = config['input_shape']
     output_shape = config['output_shape']
 
-    voxel_size = Coordinate((50, 2, 2))
+    voxel_size = Coordinate(voxel_size)
     input_size = Coordinate(input_shape)*voxel_size
     output_size = Coordinate(output_shape)*voxel_size
 
