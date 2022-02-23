@@ -44,6 +44,7 @@ def train(
         input_shape,
         voxel_size,
         sigma,
+        downsample,
         **kwargs):
 
     model = MtlsdModel(
@@ -90,7 +91,8 @@ def train(
     gt_lsds = ArrayKey('GT_LSDS')
     lsds_weights = ArrayKey('LSDS_WEIGHTS')
 
-    voxel_size = Coordinate(tuple(voxel_size))
+    downsampling = Coordinate((1,downsample,downsample))
+    voxel_size = Coordinate(tuple(voxel_size)) * downsampling
     input_size = input_shape * voxel_size
     output_size = output_shape * voxel_size
 
@@ -116,24 +118,28 @@ def train(
             ZarrSource(
                     os.path.join(data_dir, sample),
                     {
-                        raw: 'clahe_raw/s0',
-                        labels: 'labels_updated/s0',
-                        labels_mask: 'labels_mask/s0',
-                        unlabelled: 'unlabelled/s0'
+                        raw_fr: 'raw',
+                        labels_fr: 'labels',
+                        labels_mask_fr: 'labels_mask',
+                        unlabelled_fr: 'unlabelled'
                     },
                     {
-                        raw: ArraySpec(interpolatable=True),
-                        labels: ArraySpec(interpolatable=False),
-                        labels_mask: ArraySpec(interpolatable=False),
-                        unlabelled: ArraySpec(interpolatable=False)
+                        raw_fr: ArraySpec(interpolatable=True),
+                        labels_fr: ArraySpec(interpolatable=False),
+                        labels_mask_fr: ArraySpec(interpolatable=False),
+                        unlabelled_fr: ArraySpec(interpolatable=False)
                     }
                 ) +
-            Normalize(raw) +
-            Pad(raw, None) +
-            Pad(labels, labels_padding) +
-            Pad(labels_mask, labels_padding) +
-            Pad(unlabelled, labels_padding) +
-            RandomLocation(min_masked=0.5,mask=unlabelled)
+            Normalize(raw_fr) +
+            Pad(raw_fr, None) +
+            Pad(labels_fr, labels_padding) +
+            Pad(labels_mask_fr, labels_padding) +
+            Pad(unlabelled_fr, labels_padding) +
+            RandomLocation(min_masked=0.5,mask=unlabelled_fr) +
+            DownSample(raw_fr, (1, downsample, downsample), raw) +
+            DownSample(labels_fr, (1, downsample, downsample), labels) +
+            DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask) +
+            DownSample(unlabelled_fr, (1, downsample, downsample), unlabelled)
             for sample in samples
         )
 
@@ -142,12 +148,12 @@ def train(
     train_pipeline += RandomProvider()
 
     train_pipeline += ElasticAugment(
-            control_point_spacing=[2,50,50],
+            control_point_spacing=[2,int(50/downsample),int(50/downsample)],
             jitter_sigma=[0,2,2],
             rotation_interval=[0,math.pi/2.0],
             prob_slip=0.05,
             prob_shift=0.05,
-            max_misalign=10,
+            max_misalign=int(28/downsample),
             subsample=8)
 
     train_pipeline += SimpleAugment(transpose_only=[1, 2])

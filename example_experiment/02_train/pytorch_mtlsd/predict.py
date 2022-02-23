@@ -31,7 +31,7 @@ def predict(
         raw_dataset,
         out_file,
         out_dataset,
-        worker_config,
+        worker_config
         **kwargs):
 
     model = MtlsdModel(
@@ -84,16 +84,18 @@ def predict(
             checkpoint=os.path.join(setup_dir, 'model_checkpoint_%d'%iteration)
         )
 
+    pipeline +=
+
     pipeline += Squeeze([raw])
     pipeline += Squeeze([raw,affs,lsds])
-
 
     pipeline += IntensityScaleShift(affs, 255, 0)
     pipeline += IntensityScaleShift(lsds, 255, 0)
 
     pipeline += ZarrWrite(
             dataset_names={
-                affs: 'volumes/affs'
+                affs: 'volumes/affs',
+                lsds: 'volumes/lsds'
             },
             output_filename=out_file
         )
