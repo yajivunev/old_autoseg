@@ -1,5 +1,5 @@
 import json
-from funlib.learn.tensorflow.models import unet, conv_pass
+from .unet import conv_pass,unet
 import tensorflow as tf
 
 def create_network(input_shape, name):
