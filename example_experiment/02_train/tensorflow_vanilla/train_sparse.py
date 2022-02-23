@@ -167,7 +167,8 @@ def train_until(max_iteration):
         RandomLocation(min_masked=0.5, mask=unlabelled_fr) +
         DownSample(raw_fr, (1, downsample, downsample), raw) +
         DownSample(labels_fr, (1, downsample, downsample), labels) +
-        DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask)
+        DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask) +
+        DownSample(unlabelled_fr, (1, downsample, downsample), unlabelled)
         for sample in samples
     )
 

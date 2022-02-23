@@ -175,6 +175,8 @@ def train(
             labels,
             gt_lsds,
             mask=lsds_weights,
+            labels_mask=labels_mask,
+            unlabelled=unlabelled,
             sigma=sigma,
             downsample=2)
 

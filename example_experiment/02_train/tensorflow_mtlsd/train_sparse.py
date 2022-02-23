@@ -176,7 +176,8 @@ def train_until(max_iteration):
         RandomLocation(min_masked=0.5, mask=unlabelled_fr) +
         DownSample(raw_fr, (1, downsample, downsample), raw) +
         DownSample(labels_fr, (1, downsample, downsample), labels) +
-        DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask)
+        DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask) +
+        DownSample(unlabelled_fr, (1,downsample,downsample), unlabelled)
         for sample in samples
     )
 
@@ -198,6 +199,8 @@ def train_until(max_iteration):
             labels,
             gt_lsds,
             mask=gt_lsds_scale,
+            labels_mask=labels_mask,
+            unlabelled=unlabelled,
             sigma=100,
             downsample=2) +
         AddAffinities(
