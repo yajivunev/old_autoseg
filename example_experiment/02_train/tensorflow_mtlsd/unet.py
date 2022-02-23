@@ -96,6 +96,7 @@ def conv_pass(
             padding='valid',
             data_format='channels_first',
             activation=activation,
+            kernel_initializer=tf.he_uniform_initializer(),
             name=name + '_%i' % i)
 
         out_shape = tuple(fmaps.get_shape().as_list())
@@ -271,6 +272,7 @@ def upsample(
                 strides=(1, 1) + tuple(factors),
                 padding='VALID',
                 data_format='NCHW',
+                kernel_initializer=tf.he_uniform_initializer(),
                 name=name)
 
             if activation is not None:
@@ -298,6 +300,7 @@ def upsample(
                 strides=(1, 1) + tuple(factors),
                 padding='VALID',
                 data_format='NCDHW',
+                kernel_initializer=tf.he_uniform_initializer(),
                 name=name)
 
             if activation is not None:
@@ -314,6 +317,7 @@ def upsample(
                 data_format='channels_first',
                 activation=activation,
                 name=name,
+                kernel_initializer=tf.he_uniform_initializer()
                 )
 
         else:
@@ -325,6 +329,7 @@ def upsample(
                 padding='valid',
                 data_format='channels_first',
                 activation=activation,
+                kernel_initializer=tf.he_uniform_initializer(),
                 name=name)
 
     return fmaps, voxel_size

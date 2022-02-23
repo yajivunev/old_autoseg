@@ -33,6 +33,11 @@ neighborhood = [[-1, 0, 0], [0, -1, 0], [0, 0, -1]]
 
 batch_size = 1
 
+def init_weights(m):
+    if isinstance(m, (torch.nn.Conv3d,torch.nn.ConvTranspose3d)):
+        torch.nn.init.kaiming_uniform_(m.weight,nonlinearity='relu')
+        #m.bias.data.fill_(0.01)
+
 def train(
         max_iteration,
         in_channels,
@@ -54,6 +59,8 @@ def train(
             downsample_factors,
             kernel_size_down,
             kernel_size_up)
+
+    model.apply(init_weights)
 
     loss = WeightedMSELoss()
 

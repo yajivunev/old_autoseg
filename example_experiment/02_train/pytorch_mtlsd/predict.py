@@ -31,7 +31,7 @@ def predict(
         raw_dataset,
         out_file,
         out_dataset,
-        worker_config
+        worker_config,
         **kwargs):
 
     model = MtlsdModel(
@@ -83,8 +83,6 @@ def predict(
             },
             checkpoint=os.path.join(setup_dir, 'model_checkpoint_%d'%iteration)
         )
-
-    pipeline +=
 
     pipeline += Squeeze([raw])
     pipeline += Squeeze([raw,affs,lsds])

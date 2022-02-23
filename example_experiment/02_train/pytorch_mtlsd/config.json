@@ -16,6 +16,7 @@
     "input_shape": [84, 196, 196],
     "voxel_size": [40, 4, 4],
     "sigma": 80,
+    "downsample": 4,
     "outputs": {
         "affs": {"out_dtype": "uint8", "out_dims": 3},
         "lsds": {"out_dtype": "uint8", "out_dims": 10}
