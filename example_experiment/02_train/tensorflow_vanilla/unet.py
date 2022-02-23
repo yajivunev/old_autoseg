@@ -1,4 +1,4 @@
-from .conv4d import conv4d
+from conv4d import conv4d
 import math
 import numpy as np
 import tensorflow as tf
@@ -96,7 +96,7 @@ def conv_pass(
             padding='valid',
             data_format='channels_first',
             activation=activation,
-            kernel_initializer=tf.he_uniform_initializer(),
+            kernel_initializer=tf.initializers.he_uniform(),
             name=name + '_%i' % i)
 
         out_shape = tuple(fmaps.get_shape().as_list())
@@ -272,7 +272,7 @@ def upsample(
                 strides=(1, 1) + tuple(factors),
                 padding='VALID',
                 data_format='NCHW',
-                kernel_initializer=tf.he_uniform_initializer(),
+                kernel_initializer=tf.initializers.he_uniform(),
                 name=name)
 
             if activation is not None:
@@ -300,7 +300,7 @@ def upsample(
                 strides=(1, 1) + tuple(factors),
                 padding='VALID',
                 data_format='NCDHW',
-                kernel_initializer=tf.he_uniform_initializer(),
+                kernel_initializer=tf.initializers.he_uniform(),
                 name=name)
 
             if activation is not None:
@@ -317,7 +317,7 @@ def upsample(
                 data_format='channels_first',
                 activation=activation,
                 name=name,
-                kernel_initializer=tf.he_uniform_initializer()
+                kernel_initializer=tf.initializers.he_uniform()
                 )
 
         else:
@@ -329,7 +329,7 @@ def upsample(
                 padding='valid',
                 data_format='channels_first',
                 activation=activation,
-                kernel_initializer=tf.he_uniform_initializer(),
+                kernel_initializer=tf.initializers.he_uniform(),
                 name=name)
 
     return fmaps, voxel_size

@@ -15,7 +15,7 @@ from lsd.gp import AddLocalShapeDescriptor
 
 # example training script for mtlsd model for neuron segmentation
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 torch.backends.cudnn.benchmark = True
 
@@ -85,6 +85,11 @@ def train(
     input_shape = Coordinate(tuple(input_shape))
 
     print("output shape: ",tuple(output_shape))
+
+    raw_fr = ArrayKey('RAW_FR')
+    labels_fr = ArrayKey('GT_LABELS_FR')
+    labels_mask_fr = ArrayKey('GT_LABELS_MASK_FR')
+    unlabelled_fr = ArrayKey('UNLABELLED_FR')
 
     raw = ArrayKey('RAW')
     labels = ArrayKey('GT_LABELS')
@@ -178,7 +183,7 @@ def train(
             labels_mask=labels_mask,
             unlabelled=unlabelled,
             sigma=sigma,
-            downsample=2)
+            downsample=1)
 
     train_pipeline += AddAffinities(
             neighborhood,

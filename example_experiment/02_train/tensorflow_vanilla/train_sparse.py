@@ -14,7 +14,7 @@ from gunpowder.tensorflow import *
 Training script for sparsely labelled ground truth.
 """
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 data_dir = '../../01_data'
 
@@ -24,8 +24,6 @@ data_dir = '../../01_data'
 #]
 
 neighborhood = [[-1, 0, 0], [0, -1, 0], [0, 0, -1]]
-voxel_size = [50,2,2]
-downsample = 4
 
 # needs to match order of samples (small to large)
 
@@ -102,9 +100,17 @@ def train_until(max_iteration):
     if trained_until >= max_iteration:
         return
 
+    voxel_size = [50,2,2]
+    downsample = 4
+    
     with open('train_net.json', 'r') as f:
         config = json.load(f)
 
+    raw_fr = ArrayKey('RAW_FR')
+    labels_fr = ArrayKey('GT_LABELS_FR')
+    labels_mask_fr = ArrayKey('GT_LABELS_MASK_FR')
+    unlabelled_fr = ArrayKey('UNLABELLED_FR')
+    
     raw = ArrayKey('RAW')
     labels = ArrayKey('GT_LABELS')
     labels_mask = ArrayKey('GT_LABELS_MASK')

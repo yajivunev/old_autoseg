@@ -1,4 +1,4 @@
-from .conv4d import Conv4d
+from conv4d import Conv4d
 import math
 import torch
 import torch.nn as nn

@@ -1,5 +1,5 @@
 import torch
-from .unet import UNet, ConvPass
+from unet import UNet, ConvPass
 from gunpowder import BatchFilter, Coordinate, Roi
 import numpy as np
 

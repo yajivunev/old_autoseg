@@ -12,7 +12,7 @@ from gunpowder import *
 from gunpowder.ext import torch
 from gunpowder.torch import *
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 torch.backends.cudnn.benchmark = True
 
@@ -66,7 +66,7 @@ def train(
             eps=1e-08)
 
     if 'output_shape' not in kwargs:
-        output_shape = model.forward(torch.empty(size=[1,1]+input_shape))[0].shape[2:]
+        output_shape = model.forward(torch.empty(size=[1,1]+input_shape)).shape[2:]
         with open("config.json","r") as f:
             config = json.load(f)
             
@@ -81,6 +81,10 @@ def train(
     input_shape = Coordinate(tuple(input_shape))
 
     print("output shape: ",tuple(output_shape))
+
+    raw_fr = ArrayKey('RAW_FR')
+    labels_fr = ArrayKey('GT_LABELS_FR')
+    labels_mask_fr = ArrayKey('GT_LABELS_MASK_FR')
 
     raw = ArrayKey('RAW')
     labels = ArrayKey('GT_LABELS')

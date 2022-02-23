@@ -12,7 +12,7 @@ def conv4d(
         dilation_rate=(1, 1, 1, 1),
         activation=None,
         use_bias=True,
-        kernel_initializer=tf.he_uniform_initializer(),
+        kernel_initializer=tf.initializers.he_uniform(),
         bias_initializer=tf.zeros_initializer(),
         kernel_regularizer=None,
         bias_regularizer=None,
