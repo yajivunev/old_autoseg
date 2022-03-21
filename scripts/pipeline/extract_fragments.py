@@ -79,105 +79,99 @@ def extract_fragments(
         total_roi=total_roi,
         read_roi=read_roi,
         write_roi=write_roi,
-        process_function=lambda b: start_worker(
+        process_function=lambda b: extract_fragments_worker(
             b,
             affs_file,
             affs_dataset,
             fragments_file,
             fragments_dataset,
-            block_directory,
-            write_roi,
             context,
+            block_directory,
+            write_roi.shape,
+            num_voxels_in_block,
             fragments_in_xy,
             epsilon_agglomerate,
-            mask_file,
-            mask_dataset,
             filter_fragments,
             replace_sections,
-            num_voxels_in_block),
+            mask_file,
+            mask_dataset),
         check_function=None,
         num_workers=num_workers,
+        max_retries=7,
         read_write_conflict=False,
         fit='shrink')
 
     return task
 
-def start_worker(
+
+def extract_fragments_worker(
         block,
         affs_file,
         affs_dataset,
         fragments_file,
         fragments_dataset,
-        block_directory,
-        write_roi,
         context,
+        block_directory,
+        write_size,
+        num_voxels_in_block,
         fragments_in_xy,
         epsilon_agglomerate,
-        mask_file,
-        mask_dataset,
         filter_fragments,
         replace_sections,
-        num_voxels_in_block,
-        **kwargs):
+        mask_file,
+        mask_dataset):
 
-    worker_id = int(daisy.Context.from_env()['worker_id'])
+    logging.info("Reading affs from %s", affs_file)
+    affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    logging.info("worker %s started...", worker_id)
+    logging.info("Reading fragments from %s", fragments_file)
+    fragments = daisy.open_ds(
+        fragments_file,
+        fragments_dataset,
+        mode='r+')
 
-    logging.info('epsilon_agglomerate: %s', epsilon_agglomerate)
-    logging.info('mask_file: %s', mask_file)
-    logging.info('mask_dataset: %s', mask_dataset)
-    logging.info('filter_fragments: %s', filter_fragments)
-    logging.info('replace_sections: %s', replace_sections)
+    if mask_file is not None:
 
-    try:
-        os.makedirs(output_dir)
-    except:
-        pass
+        logging.info("Reading mask from {}".format(mask_file))
+        mask = daisy.open_ds(
+            mask_file,
+            mask_dataset,
+            mode='r')
 
-    config = {
-            'affs_file': affs_file,
-            'affs_dataset': affs_dataset,
-            'fragments_file': fragments_file,
-            'fragments_dataset': fragments_dataset,
-            'context': context,
-            'block_directory': block_directory,
-            'write_size': write_roi.shape,
-            'fragments_in_xy': fragments_in_xy,
-            'epsilon_agglomerate': epsilon_agglomerate,
-            'mask_file': mask_file,
-            'mask_dataset': mask_dataset,
-            'filter_fragments': filter_fragments,
-            'replace_sections': replace_sections,
-            'num_voxels_in_block': num_voxels_in_block
-        }
+    else:
 
-    config_str = ''.join(['%s'%(v,) for v in config.values()])
-    config_hash = abs(int(hashlib.md5(config_str.encode()).hexdigest(), 16))
+        mask = None
 
-    config_file = os.path.join('.','daisy_logs','ExtractFragmentsBlockwiseTask', '%d.json'%config_hash)
-
-    with open(config_file, 'w') as f:
-        json.dump(config, f)
-
-    logging.info('Running block with config %s...'%config_file)
-
-    worker = 'workers/extract_fragments_worker.py'
-
-    command = ["python -u",os.path.join(".", worker),os.path.abspath(config_file)]
+    # open RAG DB
+    logging.info("Opening RAG file...")
+    rag_provider = daisy.persistence.FileGraphProvider(
+        directory=block_directory,
+        chunk_size=write_size,
+        mode='r+',
+        directed=False,
+        position_attribute=['center_z', 'center_y', 'center_x']
+        )
     
-    os.environ["CUDA_VISIBLE_DEVICES"] = "%s"%worker_id
+    logging.info("RAG file opened")
 
-    try:
-        subprocess.check_call(
-            ' '.join(command),
-            shell=True)
-    except subprocess.CalledProcessError as exc:
-        raise Exception(
-            "Calling %s failed with return code %s, stderr in %s" %
-            (' '.join(command), exc.returncode, sys.stderr.name))
-    except KeyboardInterrupt:
-        raise Exception("Canceled by SIGINT")
+    logging.info("block read roi begin: %s", block.read_roi.offset)
+    logging.info("block read roi shape: %s", block.read_roi.shape)
+    logging.info("block write roi begin: %s", block.write_roi.offset)
+    logging.info("block write roi shape: %s", block.write_roi.shape)
+
+    lsd.watershed_in_block(
+        affs,
+        block,
+        context,
+        rag_provider,
+        fragments,
+        num_voxels_in_block=num_voxels_in_block,
+        mask=mask,
+        fragments_in_xy=fragments_in_xy,
+        epsilon_agglomerate=epsilon_agglomerate,
+        filter_fragments=filter_fragments,
+        replace_sections=replace_sections)
+
 
 if __name__ == "__main__":
 

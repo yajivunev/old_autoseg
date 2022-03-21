@@ -71,80 +71,71 @@ def agglomerate(
         total_roi,
         read_roi,
         write_roi,
-        process_function=lambda b: start_worker(
+        process_function=lambda b: agglomerate_worker(
             b,
             affs_file,
             affs_dataset,
             fragments_file,
             fragments_dataset,
             block_directory,
-            write_roi,
+            write_roi.shape,
             merge_function),
         num_workers=num_workers,
         read_write_conflict=False,
         fit='shrink')
 
     #done = daisy.run_blockwise([task])
-
-
     return task
 
-def start_worker(
+def agglomerate_worker(
         block,
         affs_file,
         affs_dataset,
         fragments_file,
         fragments_dataset,
         block_directory,
-        write_roi,
-        merge_function,
-        **kwargs):
+        write_size,
+        merge_function):
 
-    worker_id = int(daisy.Context.from_env()['worker_id'])
+    waterz_merge_function = {
+        'hist_quant_10': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 10, ScoreValue, 256, false>>',
+        'hist_quant_10_initmax': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 10, ScoreValue, 256, true>>',
+        'hist_quant_25': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 25, ScoreValue, 256, false>>',
+        'hist_quant_25_initmax': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 25, ScoreValue, 256, true>>',
+        'hist_quant_50': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 50, ScoreValue, 256, false>>',
+        'hist_quant_50_initmax': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 50, ScoreValue, 256, true>>',
+        'hist_quant_75': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 75, ScoreValue, 256, false>>',
+        'hist_quant_75_initmax': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 75, ScoreValue, 256, true>>',
+        'hist_quant_90': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 90, ScoreValue, 256, false>>',
+        'hist_quant_90_initmax': 'OneMinus<HistogramQuantileAffinity<RegionGraphType, 90, ScoreValue, 256, true>>',
+        'mean': 'OneMinus<MeanAffinity<RegionGraphType, ScoreValue>>',
+    }[merge_function]
 
-    logging.info("worker %s started...", worker_id)
+    logging.info(f"Reading affs from {affs_file}")
+    affs = daisy.open_ds(affs_file, affs_dataset)
 
-    try:
-        os.makedirs(output_dir)
-    except:
-        pass
+    logging.info(f"Reading fragments from {fragments_file}")
+    fragments = daisy.open_ds(fragments_file, fragments_dataset)
 
-    config = {
-            'affs_file': affs_file,
-            'affs_dataset': affs_dataset,
-            'fragments_file': fragments_file,
-            'fragments_dataset': fragments_dataset,
-            'block_directory': block_directory,
-            'write_size': write_roi.get_shape(),
-            'merge_function': merge_function
-        }
+    #opening RAG file
+    logging.info("Opening RAG file...")
+    rag_provider = daisy.persistence.FileGraphProvider(
+        directory=block_directory,
+        chunk_size=write_size,
+        mode='r+',
+        directed=False,
+        edges_collection='edges_' + merge_function,
+        position_attribute=['center_z', 'center_y', 'center_x']
+        )
+    logging.info("RAG file opened")
 
-    config_str = ''.join(['%s'%(v,) for v in config.values()])
-    config_hash = abs(int(hashlib.md5(config_str.encode()).hexdigest(), 16))
-
-    config_file = os.path.join('daisy_logs', 'AgglomerateBlockwiseTask', '%d.config'%config_hash)
-
-    with open(config_file, 'w') as f:
-        json.dump(config, f)
-
-    logging.info('Running block with config %s...'%config_file)
-
-    worker = 'workers/agglomerate_worker.py'
-
-    os.environ["CUDA_VISIBLE_DEVICES"] = "%s"%worker_id
-
-    command = ["python -u",os.path.join('.', worker),os.path.abspath(config_file)]
-
-    try:
-        subprocess.check_call(
-            ' '.join(command),
-            shell=True)
-    except subprocess.CalledProcessError as exc:
-        raise Exception(
-            "Calling %s failed with return code %s, stderr in %s" %
-            (' '.join(command), exc.returncode, sys.stderr.name))
-    except KeyboardInterrupt:
-        raise Exception("Canceled by SIGINT")
+    lsd.agglomerate_in_block(
+            affs,
+            fragments,
+            rag_provider,
+            block,
+            merge_function=waterz_merge_function,
+            threshold=1.0)
 
 def check_block(blocks_agglomerated, block):
 

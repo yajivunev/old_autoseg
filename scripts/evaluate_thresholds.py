@@ -29,7 +29,6 @@ def evaluate(
         edges_collection,
         thresholds_minmax,
         thresholds_step,
-        num_workers,
         roi_offset=None,
         roi_shape=None):
 

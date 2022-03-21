@@ -7,7 +7,7 @@ import daisy
 import sys
 import time
 import datetime
-import subprocess
+#import subprocess
 
 #logging.basicConfig(level=logging.INFO)
 logging.getLogger().setLevel(logging.INFO)
@@ -91,7 +91,7 @@ def predict_blockwise(
     for output_name, val in outputs.items():
         out_dims = val['out_dims']
         out_dtype = val['out_dtype']
-        out_dataset = 'volumes/%s'%output_name
+        out_dataset = output_name
 
         ds = daisy.prepare_ds(
             out_file,
@@ -112,8 +112,7 @@ def predict_blockwise(
         input_roi,
         block_read_roi,
         block_write_roi,
-        process_function=lambda b: predict_worker(
-            b,
+        process_function=lambda : predict_worker(
             experiment,
             setup,
             iteration,
@@ -133,7 +132,6 @@ def predict_blockwise(
     return task
 
 def predict_worker(
-        block,
         experiment,
         setup,
         iteration,
@@ -145,8 +143,9 @@ def predict_worker(
         out_dataset,
         num_cache_workers):
 
-    setup_dir = os.path.join('..', experiment, '02_train', setup)
-    predict_script = os.path.abspath(os.path.join(setup_dir, 'predict.py'))
+    setup_dir = os.path.abspath(os.path.join('..','..', experiment, '02_train', setup))
+    sys.path.append(setup_dir)
+    from predict import predict
 
     if raw_file.endswith('.json'):
         with open(raw_file, 'r') as f:
@@ -157,54 +156,19 @@ def predict_worker(
         'num_cache_workers': num_cache_workers
     }
 
-    config = {
-        'iteration': iteration,
-        'raw_file': raw_file,
-        'raw_dataset': raw_dataset,
-        'auto_file': auto_file,
-        'auto_dataset': auto_dataset,
-        'out_file': out_file,
-        'out_dataset': out_dataset,
-        'worker_config': worker_config
-    }
-
-    # get a unique hash for this configuration
-    config_str = ''.join(['%s'%(v,) for v in config.values()])
-    config_hash = abs(int(hashlib.md5(config_str.encode()).hexdigest(), 16))
-    #context_str = os.environ['DAISY_CONTEXT']
-
     worker_id = int(daisy.Context.from_env()['worker_id'])
-    
-    try:
-        os.makedirs(output_dir)
-    except:
-        pass
-
-    config_file = os.path.join('.','daisy_logs','PredictBlockwiseTask', '%d.config'%config_hash)
-
-    logging.info('Running block with config %s...'%config_file)
-
-    command = ["python -u",predict_script,os.path.abspath(config_file)]
-    config["command"] = ' '.join(command)
-    #config["context"] = context_str
-
-    with open(config_file, 'w') as f:
-        json.dump(config, f)
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
     os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
-
-    try:
-        subprocess.check_call(
-            ' '.join(command),
-            shell=True)
-    except subprocess.CalledProcessError as exc:
-        raise Exception(
-            "Calling %s failed with return code %s, stderr in %s" %
-            (' '.join(command), exc.returncode, sys.stderr.name))
-    except KeyboardInterrupt:
-        raise Exception("Canceled by SIGINT")
-
+    
+    predict(
+        iteration,
+        raw_file,
+        raw_dataset,
+        out_file,
+        out_dataset,
+        worker_config)
+    
     logging.info('daisy command called')
 
     # if things went well, remove temporary files
