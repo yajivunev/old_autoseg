@@ -3,8 +3,8 @@
     "experiment": "example_experiment",
     "setup": "example_mtlsd_setup",
     "iteration": 35000,
-    "raw_dataset": "volumes/raw",
+    "raw_dataset": "raw",
     "num_workers": 4,
     "file_name": "sample_A.zarr",
-    "num_cache_workers": 4
+    "num_cache_workers": 16
 }
