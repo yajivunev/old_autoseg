@@ -1,13 +1,14 @@
 import json
 import hashlib
 import logging
-import lsd
 import numpy as np
 import os
 import daisy
 import sys
 import time
 import subprocess
+
+from watershed import watershed_in_block
 
 logging.getLogger().setLevel(logging.INFO)
 #logging.getLogger('lsd.parallel_fragments').setLevel(logging.DEBUG)
@@ -159,7 +160,7 @@ def extract_fragments_worker(
     logging.info("block write roi begin: %s", block.write_roi.offset)
     logging.info("block write roi shape: %s", block.write_roi.shape)
 
-    lsd.watershed_in_block(
+    watershed_in_block(
         affs,
         block,
         context,

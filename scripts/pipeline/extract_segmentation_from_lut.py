@@ -14,8 +14,8 @@ def extract_segmentation(
         fragments_file,
         fragments_dataset,
         edges_collection,
-        threshold,
         block_size,
+        threshold,
         out_dataset,
         num_workers,
         roi_offset=None,
@@ -66,55 +66,78 @@ def extract_segmentation(
 
     logging.info("Preparing segmentation dataset...")
 
-    segmentation = daisy.prepare_ds(
-        fragments_file,
-        out_dataset,
-        total_roi,
-        voxel_size=fragments.voxel_size,
-        dtype=np.uint64,
-        write_roi=write_roi)
+    thresholds = []
+    
+    results_file = os.path.join(fragments_file,"results.out")
 
-    lut_filename = f'seg_{edges_collection}_{int(threshold*100)}'
+    if os.path.exists(results_file):
+        with open(results_file,"r") as f:
+            lines = f.readlines()
+            for i in [-1,-2,-3]:
+                thresh = float(lines[i].split()[2])
+                if thresh not in thresholds:
+                    thresholds.append(thresh)
+                else: pass
+    else: thresholds = [threshold]
 
-    lut_dir = os.path.join(
-        fragments_file,
-        'luts',
-        'fragment_segment')
+    for threshold in thresholds:
 
-    if run_type:
-        lut_dir = os.path.join(lut_dir, run_type)
-        logging.info(f"Run type set, using luts from {run_type} data")
+        start = time.time()
 
-    lut = os.path.join(
-            lut_dir,
-            lut_filename + '.npz')
-
-    assert os.path.exists(lut), f"{lut} does not exist"
-
-    logging.info("Reading fragment-segment LUT...")
-
-    lut = np.load(lut)['fragment_segment_lut']
-
-    logging.info(f"Found {len(lut[0])} fragments in LUT")
-
-    num_segments = len(np.unique(lut[1]))
-    logging.info(f"Relabelling fragments to {num_segments} segments")
-
-    task = daisy.Task(
-        'ExtractSegmentationTask',
-        total_roi,
-        read_roi,
-        write_roi,
-        lambda b: segment_in_block(
-            b,
+        segmentation = daisy.prepare_ds(
             fragments_file,
-            segmentation,
-            fragments,
-            lut),
-        fit='shrink',
-        num_workers=num_workers)
+            "segmentation_"+str(threshold),
+            total_roi,
+            voxel_size=fragments.voxel_size,
+            dtype=np.uint64,
+            write_roi=write_roi)
 
-    return task
+        lut_filename = f'seg_{edges_collection}_{int(threshold*100)}'
+
+        lut_dir = os.path.join(
+            fragments_file,
+            'luts',
+            'fragment_segment')
+
+        if run_type:
+            lut_dir = os.path.join(lut_dir, run_type)
+            logging.info(f"Run type set, using luts from {run_type} data")
+
+        lut = os.path.join(
+                lut_dir,
+                lut_filename + '.npz')
+
+        assert os.path.exists(lut), f"{lut} does not exist"
+
+        logging.info("Reading fragment-segment LUT...")
+
+        lut = np.load(lut)['fragment_segment_lut']
+
+        logging.info(f"Found {len(lut[0])} fragments in LUT")
+
+        num_segments = len(np.unique(lut[1]))
+        logging.info(f"Relabelling fragments to {num_segments} segments")
+
+        task = daisy.Task(
+            'ExtractSegmentationTask',
+            total_roi,
+            read_roi,
+            write_roi,
+            lambda b: segment_in_block(
+                b,
+                fragments_file,
+                segmentation,
+                fragments,
+                lut),
+            fit='shrink',
+            num_workers=num_workers)
+
+        done = daisy.run_blockwise([task])
+
+        if not done:
+            raise RuntimeError("Extraction of segmentation from LUT failed for (at least) one block")
+
+        logging.info(f"Took {time.time() - start} seconds to extract segmentation from LUT")
 
 def segment_in_block(
         block,
@@ -141,13 +164,4 @@ if __name__ == "__main__":
     with open(config_file, 'r') as f:
         config = json.load(f)
 
-    start = time.time()
-    
-    task = extract_segmentation(**config)
-
-    done = daisy.run_blockwise([task])
-
-    if not done:
-        raise RuntimeError("Extraction of segmentation from LUT failed for (at least) one block")
-
-    logging.info(f"Took {time.time() - start} seconds to extract segmentation from LUT")
+    extract_segmentation(**config)

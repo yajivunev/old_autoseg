@@ -1,13 +1,14 @@
 import json
 import hashlib
 import logging
-import lsd
 import numpy as np
 import os
 import daisy
 import sys
 import time
 import subprocess
+
+from lsd import agglomerate_in_block
 
 logging.getLogger().setLevel(logging.INFO)
 # logging.getLogger('lsd.parallel_fragments').setLevel(logging.DEBUG)
@@ -82,6 +83,7 @@ def agglomerate(
             merge_function),
         num_workers=num_workers,
         read_write_conflict=False,
+        timeout=5,
         fit='shrink')
 
     #done = daisy.run_blockwise([task])
@@ -129,7 +131,7 @@ def agglomerate_worker(
         )
     logging.info("RAG file opened")
 
-    lsd.agglomerate_in_block(
+    agglomerate_in_block(
             affs,
             fragments,
             rag_provider,

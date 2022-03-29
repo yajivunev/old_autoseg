@@ -9,6 +9,9 @@ from agglomerate_blockwise import agglomerate
 from find_segments import find_segments
 from extract_segmentation_from_lut import extract_segmentation
 
+""" Run pipeline blockwise. """
+
+
 if __name__ == "__main__":
 
     config_path = os.path.abspath(sys.argv[1])
@@ -38,14 +41,14 @@ if __name__ == "__main__":
     task_02 = extract_fragments(**config02)
     task_03 = agglomerate(**config03)
 
-    task_02.upstream_tasks=[task_01]
-    task_03.upstream_tasks=[task_02]
+    #task_02.upstream_tasks=[task_01]
+    #task_03.upstream_tasks=[task_02]
     
-    #daisy.run_blockwise([task_01])
-    #daisy.run_blockwise([task_02])
-    #daisy.run_blockwise([task_03])
+    daisy.run_blockwise([task_01])
+    daisy.run_blockwise([task_02])
+    daisy.run_blockwise([task_03])
 
-    daisy.run_blockwise([task_01,task_02,task_03])
+    #daisy.run_blockwise([task_01,task_02,task_03])
 
     find_segments(**config04)
     extract_segmentation(**config05)

@@ -113,18 +113,20 @@ def find_segments(
         float(thresholds_minmax[1]),
         thresholds_step)]
 
+    #parallel processing
+    
     start = time.time()
+
+    pool = []
+
+    for t in thresholds:
+
+        p = mp.Process(target=get_connected_components, args=(nodes,edges,scores,t,edges_collection,out_dir,))
+        pool.append(p)
+        p.start()
+
+    for p in pool: p.join()
    
-    for threshold in thresholds:
-
-        get_connected_components(
-                nodes,
-                edges,
-                scores,
-                threshold,
-                edges_collection,
-                out_dir)
-
     logging.info(f"Created and stored lookup tables in {time.time() - start}")
 
 def get_connected_components(

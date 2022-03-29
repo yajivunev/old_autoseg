@@ -159,7 +159,7 @@ def predict_worker(
     worker_id = int(daisy.Context.from_env()['worker_id'])
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
-    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+    #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
     
     predict(
         iteration,

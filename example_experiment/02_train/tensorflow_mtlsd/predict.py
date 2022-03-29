@@ -74,8 +74,8 @@ def predict(
 
     pipeline += ZarrWrite(
             dataset_names={
-                lsds: 'volumes/lsds',
-                affs: 'volumes/affs'
+                lsds: 'lsds',
+                affs: 'affs'
             },
             output_filename=out_file
         )
