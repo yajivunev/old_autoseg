@@ -21,6 +21,7 @@ def predict_blockwise(
         file_name,
         num_workers,
         num_cache_workers,
+        epoch=None,
         auto_file=None,
         auto_dataset=None):
 
@@ -118,6 +119,7 @@ def predict_blockwise(
             iteration,
             raw_file,
             raw_dataset,
+            epoch,
             auto_file,
             auto_dataset,
             out_file,
@@ -137,6 +139,7 @@ def predict_worker(
         iteration,
         raw_file,
         raw_dataset,
+        epoch,
         auto_file,
         auto_dataset,
         out_file,
@@ -162,6 +165,7 @@ def predict_worker(
     #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
     
     predict(
+        epoch,
         iteration,
         raw_file,
         raw_dataset,

@@ -11,7 +11,7 @@ import sys
 from funlib.evaluate import rand_voi
 from funlib.segment.arrays import replace_values
 
-from multiprocessing import Process,Manager
+from multiprocessing import Process,Manager,Pool
 
 """ Script to evaluate VOI,NVI,NID against ground truth for a fragments dataset at different 
 agglomeration thresholds and find the best threshold. """
@@ -26,11 +26,12 @@ def evaluate_thresholds(
         edges_collection,
         thresholds_minmax,
         thresholds_step,
-        results_file,
         roi_offset=None,
         roi_shape=None):
 
     start = time.time()
+
+    results_file = os.path.join(fragments_file,'results.out')
 
     logging.basicConfig(
             filename=results_file,
@@ -85,15 +86,17 @@ def evaluate_thresholds(
     metrics["nvi"] = manager.dict()
     metrics["nid"] = manager.dict()
    
-    pool = []
+    with Pool(10) as pool:
+        pool.starmap(evaluate,[(t,fragments,gt,fragments_file,edges_collection,metrics) for t in thresholds])
+    #pool = []
 
-    for t in thresholds:
+    #for t in thresholds:
 
-        p = Process(target=evaluate, args=(t,fragments,gt,fragments_file,edges_collection,metrics,))
-        p.start()
-        pool.append(p)
+    #    p = Process(target=evaluate, args=(t,fragments,gt,fragments_file,edges_collection,metrics,))
+    #    p.start()
+    #    pool.append(p)
 
-    for p in pool: p.join()
+    #for p in pool: p.join()
 
     logging.info("Best VOI,NVI,NID and respective thresholds: \n")
     best_voi = metrics['voi'][min(metrics['voi'].keys())]
