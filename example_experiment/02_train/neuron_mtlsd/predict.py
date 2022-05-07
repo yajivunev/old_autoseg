@@ -43,16 +43,20 @@ def predict(
             fmap_inc_factor=config['fmap_inc_factor'],
             downsample_factors=config['downsample_factors'],
             kernel_size_down=config['kernel_size_down'],
-            kernel_size_up=config['kernel_size_up'])
+            kernel_size_up=config['kernel_size_up'],
+            batch_size=1,
+            input_shape=config['input_shape'])
 
     model.eval()
 
     raw = ArrayKey('RAW')
     affs = ArrayKey('AFFS')
+    lsds = ArrayKey('LSDS')
 
     chunk_request = BatchRequest()
     chunk_request.add(raw, input_size)
     chunk_request.add(affs, output_size)
+    chunk_request.add(lsds, output_size)
 
     pipeline = ZarrSource(
             raw_file,
@@ -79,18 +83,20 @@ def predict(
                 'input': raw
             },
             outputs={
-                0: affs
+                0: lsds,
+                1: affs
             },
         )
 
     pipeline += Squeeze([raw])
-    pipeline += Squeeze([raw,affs])
+    pipeline += Squeeze([raw,affs,lsds])
 
     pipeline += IntensityScaleShift(affs, 255, 0)
 
     pipeline += ZarrWrite(
             dataset_names={
                 affs: 'affs',
+                lsds: 'lsds',
             },
             output_filename=out_file
         )
@@ -101,6 +107,7 @@ def predict(
             roi_map={
                 raw: 'read_roi',
                 affs: 'write_roi',
+                lsds: 'write_roi',
             },
             num_workers=worker_config['num_cache_workers'])
 

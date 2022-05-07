@@ -1,10 +1,11 @@
 {
-    "base_dir": "/directory/containing/example_experiment",
+    "base_dir": "/scratch1/04101/vvenu/autoseg/",
     "experiment": "example_experiment",
-    "setup": "example_mtlsd_setup",
-    "iteration": 35000,
+    "setup": "example_setup",
+    "epoch": 0,
+    "iteration": 100000,
     "raw_dataset": "raw",
     "num_workers": 4,
-    "file_name": "sample_A.zarr",
-    "num_cache_workers": 16
+    "file_name": "example_volume.zarr",
+    "num_cache_workers": 1
 }

@@ -8,7 +8,7 @@ import sys
 
 from gunpowder import *
 from gunpowder.torch import Predict
-from model import MtLsdModule
+from model import UNetModule
 
 setup_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -36,25 +36,25 @@ def predict(
 
     if epoch == None: epoch = 0
 
-    model = MtLsdModule.load_from_checkpoint(
+    model = UNetModule.load_from_checkpoint(
             os.path.join(setup_dir,'checkpoints',f'epoch={epoch}-step={iteration}.ckpt'),
             in_channels=config['in_channels'],
             num_fmaps=config['num_fmaps'],
             fmap_inc_factor=config['fmap_inc_factor'],
             downsample_factors=config['downsample_factors'],
             kernel_size_down=config['kernel_size_down'],
-            kernel_size_up=config['kernel_size_up'])
+            kernel_size_up=config['kernel_size_up'],
+            batch_size=1,
+            input_shape=config['input_shape'])
 
     model.eval()
 
     raw = ArrayKey('RAW')
     affs = ArrayKey('AFFS')
-    lsds = ArrayKey('LSDS')
 
     chunk_request = BatchRequest()
     chunk_request.add(raw, input_size)
     chunk_request.add(affs, output_size)
-    chunk_request.add(lsds, output_size)
 
     pipeline = ZarrSource(
             raw_file,
@@ -81,20 +81,18 @@ def predict(
                 'input': raw
             },
             outputs={
-                0: lsds,
-                1: affs
+                0: affs
             },
         )
 
     pipeline += Squeeze([raw])
-    pipeline += Squeeze([raw,affs,lsds])
+    pipeline += Squeeze([raw,affs])
 
     pipeline += IntensityScaleShift(affs, 255, 0)
 
     pipeline += ZarrWrite(
             dataset_names={
-                affs: 'affs',
-                lsds: 'lsds',
+                affs: 'affs'
             },
             output_filename=out_file
         )
@@ -104,8 +102,7 @@ def predict(
             chunk_request,
             roi_map={
                 raw: 'read_roi',
-                affs: 'write_roi',
-                lsds: 'write_roi',
+                affs: 'write_roi'
             },
             num_workers=worker_config['num_cache_workers'])
 

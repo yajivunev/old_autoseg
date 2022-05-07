@@ -5,8 +5,7 @@ import numpy as np
 from pytorch_lightning import LightningModule
 from apex.optimizers import FusedAdam
 
-
-class UNetModel(torch.nn.Module):
+class MtlsdModel(torch.nn.Module):
 
     def __init__(
             self,
@@ -28,13 +27,15 @@ class UNetModel(torch.nn.Module):
                 kernel_size_up=kernel_size_up)
 
         self.aff_head = ConvPass(num_fmaps,3,[[1,1,1]],activation='Sigmoid')
+        self.lsd_head = ConvPass(num_fmaps,10,[[1,1,1]],activation='Sigmoid')
 
     def forward(self,input):
 
         z = self.unet(input)
+        lsds = self.lsd_head(z)
         affs = self.aff_head(z)
 
-        return affs
+        return lsds,affs
 
 
 class WeightedMSELoss(torch.nn.MSELoss):
@@ -63,13 +64,17 @@ class WeightedMSELoss(torch.nn.MSELoss):
 
     def forward(
             self,
+            lsds_prediction,
+            lsds_target,
+            lsds_weights,
             affs_prediction,
             affs_target,
             affs_weights):
 
-        loss = self._calc_loss(affs_prediction, affs_target, affs_weights)
+        loss1 = self._calc_loss(lsds_prediction, lsds_target, lsds_weights)
+        loss2 = self._calc_loss(affs_prediction, affs_target, affs_weights)
 
-        return loss
+        return loss1 + loss2
 
 
 #util functions
@@ -144,10 +149,12 @@ class MtLsdModule(LightningModule):
             fmap_inc_factor,
             downsample_factors,
             kernel_size_down,
-            kernel_size_up):
+            kernel_size_up,
+            batch_size,
+            input_shape):
 
         super().__init__()
-        self.unet = UnetModel(
+        self.unet = MtlsdModel(
             in_channels,
             num_fmaps,
             fmap_inc_factor,
@@ -155,8 +162,7 @@ class MtLsdModule(LightningModule):
             kernel_size_down,
             kernel_size_up)
 
-        self.example_input_array = torch.rand((1,1,48,196,196))
-
+        self.example_input_array = torch.rand([batch_size]+[1]+input_shape)
         self.loss_fn = WeightedMSELoss()
 
     def configure_optimizers(self):
@@ -171,9 +177,9 @@ class MtLsdModule(LightningModule):
 
     def forward(self,input):
 
-        affs = self.unet(input)
+        lsds,affs = self.unet(input)
 
-        return affs
+        return lsds,affs
 
     def training_epoch_end(self,outputs):
 
@@ -184,21 +190,36 @@ class MtLsdModule(LightningModule):
 
         #compute epoch-level loss
         avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
+        avg_loss_lsds = torch.stack([x['lsds_loss'] for x in outputs]).mean()
+        avg_loss_affs = torch.stack([x['affs_loss'] for x in outputs]).mean()
 
         self.logger.experiment.add_scalar("epoch_loss", avg_loss, self.current_epoch)
+        self.logger.experiment.add_scalar("epoch_loss_lsds", avg_loss_lsds, self.current_epoch)
+        self.logger.experiment.add_scalar("epoch_loss_affs", avg_loss_affs, self.current_epoch)
 
     def training_step(self,batch,batch_idx):
 
-        raw,_,gt_affs,affs_weights = batch
+        opt = self.optimizers()
+        opt.zero_grad()
 
-        pred_affs = self.unet(raw)
-        loss = self.loss_fn._calc_loss(pred_affs, gt_affs, affs_weights)
+        raw,gt_lsds,lsds_weights,gt_affs,affs_weights,batch_id = batch
+
+        pred_lsds,pred_affs = self.unet(raw)
+        lsds_loss = self.loss_fn._calc_loss(pred_lsds, gt_lsds, lsds_weights)
+        affs_loss = self.loss_fn._calc_loss(pred_affs, gt_affs, affs_weights)
+
+        loss = lsds_loss + affs_loss
 
         self.logger.experiment.add_scalar("loss",loss,self.global_step) 
+        self.logger.experiment.add_scalar("lsds_loss",loss,self.global_step) 
+        self.logger.experiment.add_scalar("affs_loss",loss,self.global_step) 
 
         batch_dictionary = {
             'loss': loss,
+            'lsds_loss': lsds_loss,
+            'affs_loss': affs_loss,
             'batch_idx': batch_idx,
+            'batch.id': batch_id,
             #TO DO: add VOI/NVI",
             'global_step': self.global_step}
 
