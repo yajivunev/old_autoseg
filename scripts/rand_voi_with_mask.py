@@ -1,3 +1,4 @@
+import logging
 from rand_voi import compute_rand_voi
 import sys
 import os
@@ -32,10 +33,12 @@ if __name__ == "__main__":
     gt = gt.to_ndarray()
 
     logging.info("Converting seg to nd array...")
-    seg = seg.to_ndarray()
+    seg = seg.to_ndarray().astype(np.uint64)
 
     logging.info("Convering mask to nd array...")
     mask = mask.to_ndarray()
+
+    seg = np.pad(seg,((0,0),(20,20),(20,20)))
 
     seg = seg * mask #masking out unlabelled in seg
     gt = gt * mask #just in case
