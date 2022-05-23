@@ -39,27 +39,24 @@ class WeightedBCELoss(torch.nn.Module):
     def __init__(self):
         super(WeightedBCELoss, self).__init__()
 
-#    def _calc_loss(self, pred, target, weights):
-#
-#        m = torch.nn.Sigmoid()
-#        pred = m(pred)
-#
-#        scale = - weights * target * torch.log(pred) - (1 - target) * weights * torch.log(1 - pred)
-#
-#        if len(torch.nonzero(scale)) != 0:
-#
-#            loss = torch.mean(
-#                    torch.masked_select(
-#                        scale,
-#                        torch.gt(weights, 0)
-#                        )
-#                    )
-#
-#        else:
-#
-#            loss = torch.mean(scale)
-#
-#        return loss
+    def _calc_loss(self, pred, target, weights):
+
+        scale = - weights * target * torch.log(pred) - (1 - target) * weights * torch.log(1 - pred)
+
+        if len(torch.nonzero(scale)) != 0:
+
+            loss = torch.mean(
+                    torch.masked_select(
+                        scale,
+                        torch.gt(weights, 0)
+                        )
+                    )
+
+        else:
+
+            loss = torch.mean(scale)
+
+        return loss
 
     def forward(
             self,
@@ -67,6 +64,6 @@ class WeightedBCELoss(torch.nn.Module):
             target,
             weights):
 
-        loss = torch.nn.functional.binary_cross_entropy(pred,target,weights)
+        loss = self._calc_loss(pred,target,weights)
 
         return loss
