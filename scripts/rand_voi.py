@@ -41,6 +41,8 @@ def compute_rand_voi(
     logging.info(f"NVI: {nvi}, NVI split: {nvi_split}, NVI merge: {nvi_merge}")
     logging.info(f"NID: {nid}")
 
+    return metrics
+
 def ds_wrapper(in_file, in_ds):
 
     try:

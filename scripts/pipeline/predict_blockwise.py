@@ -84,8 +84,9 @@ def predict_blockwise(
     output_roi = source.roi
 
     # create read and write ROI
-    block_read_roi = daisy.Roi((0, 0, 0), net_input_size) - context
-    block_write_roi = daisy.Roi((0, 0, 0), net_output_size)
+    ndims = source.roi.dims
+    block_read_roi = daisy.Roi((0,)*ndims, net_input_size) - context
+    block_write_roi = daisy.Roi((0,)*ndims, net_output_size)
 
     logging.info('Preparing output dataset...')
 
