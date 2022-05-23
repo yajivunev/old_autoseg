@@ -239,7 +239,7 @@ class UNet(torch.nn.Module):
             num_fmaps_out=None,
             num_heads=1,
             constant_upsample=False,
-            padding='same'):
+            padding='valid'):
         '''Create a U-Net::
 
             f_in --> f_left --------------------------->> f_right--> f_out
