@@ -44,11 +44,11 @@ def predict(
     model.eval()
 
     raw = gp.ArrayKey('RAW')
-    raster = gp.ArrayKey('RASTER')
+    pred = gp.ArrayKey('PRED')
 
     chunk_request = gp.BatchRequest()
     chunk_request.add(raw, input_size)
-    chunk_request.add(raster, output_size)
+    chunk_request.add(pred, output_size)
 
     source = gp.ZarrSource(
         raw_file,
@@ -82,25 +82,25 @@ def predict(
                 'input': raw
             },
             outputs={
-                0: raster
+                0: pred
             },
             checkpoint=os.path.join(setup_dir, 'model_checkpoint_%d'%iteration)
         )
  
     pipeline += gp.Scan(chunk_request)
 
-    pipeline += gp.Squeeze([raw, raster])
-    pipeline += gp.Squeeze([raw, raster])
+    pipeline += gp.Squeeze([raw, pred])
+    pipeline += gp.Squeeze([raw, pred])
 
     predict_request = gp.BatchRequest()
 
-    predict_request.add(raw, total_input_roi.get_end())
-    predict_request.add(raster, total_output_roi.get_end())
+    predict_request.add(raw, total_input_roi.shape)
+    predict_request.add(pred, total_output_roi.shape)
 
     with gp.build(pipeline):
         batch = pipeline.request_batch(predict_request)
 
-        return batch[raster].data
+        return batch[pred].data
 
 
 if __name__ == "__main__":
@@ -109,15 +109,25 @@ if __name__ == "__main__":
     raw_file = sys.argv[2]
     raw_dataset = '2d_raw'
     out_file = sys.argv[3]
-    out_dataset = 'raster'
+    out_dataset = 'pred'
 
     raw = daisy.open_ds(
             raw_file,
             'raw')
-
-    sections = raw.shape[0]
-    total_roi = raw.roi
+    
     voxel_size = raw.voxel_size
+    sections = raw.shape[0]
+
+    # voxels
+    input_shape_3d = gp.Coordinate((1,) + tuple(config['input_shape']))
+    output_shape_3d = gp.Coordinate((1,) + tuple(config['output_shape']))
+
+    # nm
+    input_size_3d = input_shape_3d*voxel_size
+    output_size_3d = output_shape_3d*voxel_size
+    context_3d = (input_size_3d - output_size_3d) / 2
+
+    total_roi = raw.roi.grow(-context_3d,-context_3d)
 
     out = daisy.prepare_ds(
             out_file,
@@ -126,7 +136,7 @@ if __name__ == "__main__":
             voxel_size,
             dtype=np.float32)
 
-    pred = np.zeros(shape=raw.shape)
+    pred = np.zeros(shape=total_roi.shape/voxel_size)
 
     for z in range(sections):
 
