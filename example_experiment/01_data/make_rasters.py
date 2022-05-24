@@ -9,9 +9,19 @@ import json
 import zarr
 
 
+def get_sections(sample):
+
+    csv_path = os.path.join(sample, 'csvs')
+
+    non_empty_sections = [int(x.split('_')[-1].split('.')[0]) for x in os.listdir(csv_path)]
+
+    return non_empty_sections
+
 def make_raster(
         raw_file,
-        raw_dataset):
+        raw_dataset,
+        csv_file,
+        read_roi):
 
     raw = gp.ArrayKey('RAW')
     points = gp.GraphKey('POINTS')
@@ -23,7 +33,7 @@ def make_raster(
                 raw: raw_dataset
             },
             {
-                raw: gp.ArraySpec(interpolatable=True, voxel_size=gp.Coordinate([2,2]))
+                raw: gp.ArraySpec(interpolatable=True, voxel_size=gp.Coordinate([2,2]),roi=read_roi)
             }
         )
 
@@ -35,19 +45,19 @@ def make_raster(
                 array_specs={
                     raw: gp.ArraySpec(interpolatable=True)}) +
             gp.Normalize(raw) +
-            gp.Pad(raw, None),
+            gp.Pad(raw, 0),
 
             gp.CsvPointsSource(
-                filename=os.path.join(raw_file,f'csvs/section_{i}.csv'),
+                filename=csv_file,
                 points=points,
                 ndims=2,
                 scale=[2,2]) +
-            gp.Pad(points, 0) +
+            gp.Pad(points, read_roi.shape) +
             #gp.Pad(points, labels_padding) +
             gp.RasterizeGraph(
                 points,
                 raster,
-                array_spec=gp.ArraySpec(voxel_size=voxel_size,dtype=np.uint8),
+                array_spec=gp.ArraySpec(voxel_size=gp.Coordinate([2,2]),dtype=np.uint8,roi=read_roi),
                 settings=gp.RasterizationSettings(
                     radius=(10,10),
                     mode='ball')
@@ -84,7 +94,7 @@ def make_raster(
 
 if __name__ == "__main__":
 
-    raw_file = sys.argv[2]
+    raw_file = sys.argv[1]
     raw_dataset = '2d_raw'
     out_file = raw_file
     out_dataset = 'raster'
@@ -94,7 +104,6 @@ if __name__ == "__main__":
             'raw')
     
     voxel_size = raw.voxel_size
-    sections = raw.shape[0]
     shape = raw.shape[1:]
 
     # voxels
@@ -108,6 +117,8 @@ if __name__ == "__main__":
 
     total_roi = raw.roi.grow(-context_3d,-context_3d)
 
+    read_roi = gp.Roi((0,0),gp.Coordinate(shape)*gp.Coordinate(voxel_size[1:]))
+
     out = daisy.prepare_ds(
             out_file,
             out_dataset,
@@ -117,12 +128,19 @@ if __name__ == "__main__":
 
     raster = np.zeros(shape=total_roi.shape/voxel_size)
 
-    for z in range(sections):
+    #get non-empty sections
+    sections = get_sections(raw_file)
 
+    for z in sections:
+
+        print(f"at section {z}..")
         raw_ds = raw_dataset + f"/{z}"
+        csv_file = os.path.join(raw_file,f'csvs/section_{z}.csv')
 
         raster[z] = make_raster(
                 raw_file,
-                raw_ds)
+                raw_ds,
+                csv_file,
+                read_roi)
 
     out[total_roi] = raster
