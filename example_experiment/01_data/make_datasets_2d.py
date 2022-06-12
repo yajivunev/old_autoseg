@@ -5,18 +5,26 @@ import os
 import multiprocessing as mp
 
 
-def write_section(input_zarr,dataset,section,write_roi,write_vs,dtype,idx):
-   
-    print(f"at section {idx}..")
+def write_section(input_zarr,dataset,section,roi,vs,write_roi,write_vs,dtype,idx):
 
-    new_ds = daisy.prepare_ds(
-            input_zarr,
-            f"2d_{dataset}/{idx}",
-            write_roi,
-            write_vs,
-            dtype)
+    section_number = int(roi.offset[0]/vs[0] + idx)
+    
+    if np.any(section):
 
-    new_ds[write_roi] = section
+        print(f"at section {section_number}..")
+
+        new_ds = daisy.prepare_ds(
+                input_zarr,
+                f"2d_{dataset}/{section_number}",
+                write_roi,
+                write_vs,
+                dtype)
+
+        new_ds[write_roi] = section
+
+    else:
+        print(f"section {section_number} is empty, skipping")
+        pass
 
 
 if __name__ == "__main__":
@@ -30,26 +38,12 @@ if __name__ == "__main__":
     ds_data = ds.to_ndarray()
 
     roi = ds.roi
-    voxel_size = ds.voxel_size
+    vs = ds.voxel_size
     dtype = ds.dtype
  
-    write_roi = daisy.Roi((0,0),roi.shape[1:])
-    write_vs = voxel_size[1:]
+    write_roi = daisy.Roi(roi.offset[1:],roi.shape[1:])
+    write_vs = vs[1:]
 
-    with mp.Pool(2) as pool:
+    with mp.Pool(16) as pool:
 
-        pool.starmap(write_section,[(input_zarr,dataset,section,write_roi,write_vs,dtype,idx) for idx,section in enumerate(ds_data)])
-#    for id,sec in enumerate(ds_data):
-#
-#        if id % 50 == 0:
-#            print(f"at section {id}..")
-#
-#        new_ds = daisy.prepare_ds(
-#                input_zarr,
-#                f"2d_{dataset}/{id}",
-#                write_roi,
-#                write_vs,
-#                dtype)
-#
-#        new_ds[write_roi] = sec
-#        #new_ds[write_roi] = np.expand_dims(sec,axis=0)
+        pool.starmap(write_section,[(input_zarr,dataset,section,roi,vs,write_roi,write_vs,dtype,idx) for idx,section in enumerate(ds_data)])
