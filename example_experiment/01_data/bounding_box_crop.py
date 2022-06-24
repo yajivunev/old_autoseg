@@ -42,8 +42,7 @@ if __name__ == "__main__":
         roi = daisy.Roi(daisy.Coordinate([0,0,0]),(daisy.Coordinate(arr_shape)*voxel_size))
     except:
         output_zarr = input_zarr
-        print(f"No out_file given, new dataset \
-                will be written to {input_zarr}")
+        print(f"No out_file given, new dataset will be written to {input_zarr}")
         roi = daisy.Roi((daisy.Coordinate(arr_offset)*voxel_size),(daisy.Coordinate(arr_shape)*voxel_size))
 
     out_ds = daisy.prepare_ds(

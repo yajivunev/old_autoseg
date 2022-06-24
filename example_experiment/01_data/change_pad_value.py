@@ -2,7 +2,7 @@ import zarr
 import numpy as np
 import daisy
 import sys
-from skimage.segmentation import flood_fill
+from skimage.segmentation import flood_fill,flood
 from multiprocessing import Pool
 
 
@@ -15,9 +15,15 @@ def replace_padding_in_section(
     shape = section.shape
     write_roi = daisy.Roi((section_id*vs[0],0,0),(vs[0],shape[0]*vs[1],shape[1]*vs[2]))
 
-    new_section = np.expand_dims(flood_fill(section,(shape[0]-1,shape[1]-1),0),0)
+    new_section = flood_fill(section,(shape[0]-1,shape[1]-1),0)
 
-    new_dataset[write_roi] = new_section
+#    mask = flood(section,(shape[0]-1,shape[1]-1))
+#    mean_masked_val = int(np.mean(section[~mask]))
+#
+#    new_section = section.copy()
+#    new_section[mask] = mean_masked_val
+
+    new_dataset[write_roi] = np.expand_dims(new_section,0)
 
     print(f"Written {section_id}..")
 
