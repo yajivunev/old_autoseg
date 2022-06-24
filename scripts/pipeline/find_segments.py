@@ -16,6 +16,7 @@ def find_segments(
         thresholds_minmax,
         thresholds_step,
         block_size,
+        num_workers,
         fragments_dataset=None,
         run_type=None,
         roi_offset=None,
@@ -77,8 +78,10 @@ def find_segments(
             'center_y',
             'center_x'])
     
-    node_attrs = graph_provider.read_nodes(roi)
-    edge_attrs = graph_provider.read_edges(roi,nodes=node_attrs)
+    #node_attrs = graph_provider.read_nodes(roi)
+    #edge_attrs = graph_provider.read_edges(roi,nodes=node_attrs)
+
+    node_attrs,edge_attrs = graph_provider.read_blockwise(roi,block_size,num_workers)
 
     logging.info(f"Read graph in {time.time() - start}")
 
@@ -117,16 +120,30 @@ def find_segments(
     
     start = time.time()
 
-    pool = []
+    with mp.Pool(8) as pool:
 
-    for t in thresholds:
+        pool.starmap(get_connected_components,[(nodes,edges,scores,t,edges_collection,out_dir) for t in thresholds])
 
-        p = mp.Process(target=get_connected_components, args=(nodes,edges,scores,t,edges_collection,out_dir,))
-        pool.append(p)
-        p.start()
+#    pool = []
+#
+#    for t in thresholds:
+#
+#        p = mp.Process(target=get_connected_components, args=(nodes,edges,scores,t,edges_collection,out_dir,))
+#        pool.append(p)
+#        p.start()
+#
+#    for p in pool: p.join()
 
-    for p in pool: p.join()
-   
+#    for t in thresholds:
+#
+#        get_connected_components(
+#                nodes,
+#                edges,
+#                scores,
+#                t,
+#                edges_collection,
+#                out_dir)
+
     logging.info(f"Created and stored lookup tables in {time.time() - start}")
 
 def get_connected_components(

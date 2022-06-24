@@ -1,11 +1,11 @@
 {
-    "base_dir": "/scratch1/04101/vvenu/autoseg/",
+    "base_dir": "/scratch/04101/vvenu/autoseg/",
     "experiment": "example_experiment",
     "setup": "example_setup",
     "epoch": 0,
-    "iteration": 100000,
+    "iteration": 99999,
     "raw_dataset": "raw",
-    "num_workers": 4,
+    "num_workers": 1,
     "file_name": "example_volume.zarr",
-    "num_cache_workers": 1
+    "num_cache_workers": 2
 }

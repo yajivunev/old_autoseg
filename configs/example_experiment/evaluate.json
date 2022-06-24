@@ -1,9 +1,11 @@
 {
     "fragments_dataset": "fragments",
     "thresholds_step": 0.02,
-    "gt_file": "/scratch1/04101/vvenu/autoseg/example_experiment/01_data/example_volume.zarr",
-    "gt_dataset": "labels",
-    "fragments_file": "/scratch1/04101/vvenu/autoseg/example_experiment/01_data/example_setup/100000/example_volume.zarr",
+    "gt_file": "/scratch/04101/vvenu/autoseg/example_experiment/01_data/example_volume.zarr",
+    "gt_dataset": "example_experiment",
+    "fragments_file": "/scratch/04101/vvenu/autoseg/example_experiment/01_data/example_setup/99999/example_volume.zarr",
     "thresholds_minmax": [0, 1],
-    "edges_collection": "edges_hist_quant_75"
+    "edges_collection": "edges_hist_quant_75",
+    "roi_offset": [3000,4222,3790],
+    "roi_shape": [4000,3000,3000]
 }

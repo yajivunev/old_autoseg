@@ -1,8 +1,8 @@
 {
-    "num_workers": 40,
-    "block_size": [1000,600,600],
+    "num_workers": 48,
+    "block_size": [1000,500,500],
     "fragments_dataset": "fragments",
-    "fragments_file": "/scratch1/04101/vvenu/autoseg/example_experiment/01_data/example_setup/100000/example_volume.zarr",
+    "fragments_file": "/scratch/04101/vvenu/autoseg/example_experiment/01_data/example_setup/99999/example_volume.zarr",
     "threshold": 0.48,
     "edges_collection":"edges_hist_quant_75",
     "out_dataset": "segmentation"

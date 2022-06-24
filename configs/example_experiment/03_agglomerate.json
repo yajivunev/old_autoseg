@@ -1,13 +1,13 @@
 {
-    "base_dir": "/scratch1/04101/vvenu/autoseg",
-    "num_workers": 40,
+    "base_dir": "/scratch/04101/vvenu/autoseg",
+    "num_workers": 128,
     "merge_function": "hist_quant_75",
-    "block_size": [1000,600,600],
+    "block_size": [500,500,500],
     "setup": "example_setup",
     "fragments_dataset": "fragments",
-    "iteration": 100000,
+    "iteration": 99999,
     "affs_dataset": "affs",
     "experiment": "example_experiment",
-    "context": [200,40,40],
+    "context": [250,20,20],
     "file_name": "example_volume.zarr"
 }
