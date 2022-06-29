@@ -120,7 +120,7 @@ def find_segments(
     
     start = time.time()
 
-    with mp.Pool(8) as pool:
+    with mp.Pool(4) as pool:
 
         pool.starmap(get_connected_components,[(nodes,edges,scores,t,edges_collection,out_dir) for t in thresholds])
 

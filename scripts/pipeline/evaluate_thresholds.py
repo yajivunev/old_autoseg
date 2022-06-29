@@ -12,6 +12,7 @@ from funlib.evaluate import rand_voi
 from funlib.segment.arrays import replace_values
 
 from multiprocessing import Process,Manager,Pool
+from multiprocessing.managers import SharedMemoryManager
 
 """ Script to evaluate VOI,NVI,NID against ground truth for a fragments dataset at different 
 agglomeration thresholds and find the best threshold. """
@@ -52,6 +53,8 @@ def evaluate_thresholds(
     logging.info("fragments ROI is {}".format(fragments.roi))
     logging.info("gt roi is {}".format(gt.roi))
 
+    vs = gt.voxel_size
+
     if roi_offset:
         common_roi = daisy.Roi(roi_offset, roi_shape)
 
@@ -60,7 +63,7 @@ def evaluate_thresholds(
 
     logging.info("common roi is {}".format(common_roi))
     # evaluate only where we have both fragments and GT
-    logging.info("Cropping fragments and GT to common ROI %s", common_roi)
+    logging.info("Cropping fragments, mask, and GT to common ROI %s", common_roi)
     fragments = fragments[common_roi]
     gt = gt[common_roi]
 
@@ -85,9 +88,14 @@ def evaluate_thresholds(
     metrics["voi"] = manager.dict()
     metrics["nvi"] = manager.dict()
     metrics["nid"] = manager.dict()
-   
-    with Pool(10) as pool:
+
+
+#    for t in thresholds:
+#
+#        evaluate(t,fragments,gt,mask,fragments_file,edges_collection,metrics)
+    with Pool(16) as pool:
         pool.starmap(evaluate,[(t,fragments,gt,fragments_file,edges_collection,metrics) for t in thresholds])
+    
     #pool = []
 
     #for t in thresholds:
