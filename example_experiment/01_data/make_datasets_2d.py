@@ -44,6 +44,6 @@ if __name__ == "__main__":
     write_roi = daisy.Roi(roi.offset[1:],roi.shape[1:])
     write_vs = vs[1:]
 
-    with mp.Pool(16) as pool:
+    with mp.Pool(8) as pool:
 
         pool.starmap(write_section,[(input_zarr,dataset,section,roi,vs,write_roi,write_vs,dtype,idx) for idx,section in enumerate(ds_data)])

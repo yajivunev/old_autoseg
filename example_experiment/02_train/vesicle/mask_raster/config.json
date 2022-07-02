@@ -1,0 +1,1 @@
+{"max_iteration": 100000, "in_channels": 1, "num_fmaps": 12, "fmap_inc_factor": 5, "downsample_factors": [[2, 2], [2, 2]], "kernel_size_down": [[[3, 3], [3, 3]], [[3, 3], [3, 3]], [[3, 3], [3, 3]]], "kernel_size_up": [[[3, 3], [3, 3]], [[3, 3], [3, 3]]], "input_shape": [512, 512], "voxel_size": [2, 2], "downsample": 1, "batch_size": 10, "output_shape": [472, 472]}
