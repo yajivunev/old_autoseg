@@ -17,12 +17,12 @@ def bbox(img):
     return tuple(out)
 
 
-if __name__ == "__main__":
+def bbox_dataset(
+        input_zarr,
+        in_dataset,
+        out_dataset,
+        output_zarr):
 
-    input_zarr = sys.argv[1]
-    in_dataset = sys.argv[2]
-    out_dataset = sys.argv[3]
-   
     in_ds = daisy.open_ds(input_zarr,in_dataset)
 
     in_array = in_ds.to_ndarray()
@@ -37,10 +37,9 @@ if __name__ == "__main__":
 
     voxel_size = daisy.Coordinate(in_ds.voxel_size)
     
-    try:
-        output_zarr = sys.argv[4]
+    if output_zarr is not None:
         roi = daisy.Roi(daisy.Coordinate([0,0,0]),(daisy.Coordinate(arr_shape)*voxel_size))
-    except:
+    else:
         output_zarr = input_zarr
         print(f"No out_file given, new dataset will be written to {input_zarr}")
         roi = daisy.Roi((daisy.Coordinate(arr_offset)*voxel_size),(daisy.Coordinate(arr_shape)*voxel_size))
@@ -56,3 +55,20 @@ if __name__ == "__main__":
             bounds[0]:bounds[1]+1,
             bounds[2]:bounds[3]+1,
             bounds[4]:bounds[5]+1]
+
+
+if __name__ == "__main__":
+
+    input_zarr = sys.argv[1]
+    in_dataset = sys.argv[2]
+    out_dataset = sys.argv[3]
+  
+    try:
+        output_zarr = sys.argv[4]
+    except:
+        output_zarr = None
+
+    bbox_dataset(input_zarr,
+            in_dataset,
+            out_dataset,
+            output_zarr)
