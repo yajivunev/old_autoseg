@@ -128,14 +128,7 @@ class UnbumpBackground(gp.BatchFilter):
 
         uniques = np.unique(label_data)
 
-        if len(uniques) == 1:
-            label_data[label_data == np.amax(uniques)] = 0
-
-        elif len(uniques) == 2:
-            label_data[label_data == np.amax(uniques)] = 0
-            label_data[label_data == np.amin(uniques)] = 1
-
-        else: raise AssertionError("more than 2 actual classes!")
+        label_data[label_data == np.amax(uniques)] = 0
 
         batch.arrays[self.labels].data = label_data.astype(dtype)
 

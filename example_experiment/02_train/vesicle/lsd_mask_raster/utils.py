@@ -1,8 +1,72 @@
-import copy
+import numpy as np
 from typing import List
 import gunpowder as gp
-from scipy.ndimage import binary_dilation, binary_erosion, distance_transform_edt
-import numpy as np
+import copy
+
+
+def calc_max_padding(
+        output_size,
+        voxel_size,
+        neighborhood=None,
+        sigma=None,
+        mode='shrink'):
+
+    '''Calculate maximum labels padding needed.
+    Args:
+        output_size (array-like of ``int``):
+            output size of network, in world units (a gunpowder coordinate)
+        voxel_size (array-like of ``int``):
+            voxel size to use (a gunpowder coordinate)
+        neighborhood (``list`` of array-like, optional):
+            affinity neighborhood to use.
+        sigma (``int``, optional):
+            sigma if using lsds
+        mode (``string``, optional):
+            mode to use for snapping roi to grid, see gunpowder roi
+            documentation for details
+    Explanation:
+        when padding labels, we need to ensure that each batch still contains at
+        least 50% of GT data. Additionally, we need to also consider worst case
+        45 degree rotation when elastically augmenting the data. Our max padding
+        is calculated as follows:
+            output_size = output size of network in world coordinates (i.e \
+                    nanometers not voxels)
+            method_padding = largest affinity neighborhood * voxel size (for \
+                    affinities) or sigma * voxel size (for lsds)
+            diagonal = diagonal between x and y dimensions (i.e square root \ of
+            the sum of squares of x and y axes)
+            max_padding = (output_size[z]/2, diagonal/2, diagonal/2) + \
+                    method_padding
+        we then need to ensure max padding is a multiple of the voxel size - use
+        snap_to_grid for this (see gunpowder.roi.snap_to_grid())
+    '''
+
+    if neighborhood is not None:
+
+        if len(neighborhood) > 3:
+            neighborhood = neighborhood[9:12]
+
+        max_affinity = gp.Coordinate(
+                            [np.abs(aff) for val in neighborhood \
+                                    for aff in val if aff != 0]
+                        )
+
+        method_padding = voxel_size * max_affinity
+
+    if sigma:
+
+        method_padding = gp.Coordinate((sigma*3,)*3)
+
+    diag = np.sqrt(output_size[1]**2 + output_size[2]**2)
+
+    max_padding = gp.Roi(
+                    (gp.Coordinate(
+                        [i/2 for i in [output_size[0], diag, diag]]) +
+                        method_padding),
+                    (0,)*3).snap_to_grid(voxel_size,mode=mode)
+
+    return max_padding.get_begin()
+
 
 class SwapAxes(gp.BatchFilter):
     """Swap axes of a batch given axes
@@ -48,8 +112,9 @@ class BumpBackground(gp.BatchFilter):
         label_data = batch.arrays[self.labels].data
         dtype = label_data.dtype
 
-        label_data[label_data == 0] = np.amax(np.unique(label_data)) + 2
+        label_data[label_data == 0] = np.amax(np.unique(label_data)) + 1
         batch.arrays[self.labels].data = label_data.astype(dtype)
+
 
 class UnbumpBackground(gp.BatchFilter):
     '''UnBump background ID back to 0. '''
@@ -63,160 +128,7 @@ class UnbumpBackground(gp.BatchFilter):
 
         uniques = np.unique(label_data)
 
-        if len(uniques) == 1:
-            label_data[label_data == np.amax(uniques)] = 0
-
-        elif len(uniques) == 2:
-            label_data[label_data == np.amax(uniques)] = 0
-            label_data[label_data == np.amin(uniques)] = 1
-
-        else: raise AssertionError("more than 2 actual classes!")
+        label_data[label_data == np.amax(uniques)] = 0
 
         batch.arrays[self.labels].data = label_data.astype(dtype)
 
-class BinaryDilation(gp.BatchFilter):
-    '''Find connected components of the same value, and replace each component
-    with a new label.
-
-    Args:
-
-        labels (:class:`ArrayKey`):
-
-            The label array to modify.
-    '''
-
-    def __init__(self, labels,iterations):
-        self.labels = labels
-        self.iterations = iterations
-
-    def process(self, batch, request):
-        components = batch.arrays[self.labels].data
-        dtype = components.dtype
-        #simple_neighborhood = malis.mknhood3d()
-        #affinities_from_components = malis.seg_to_affgraph(
-        #    components,
-        #    simple_neighborhood)
-        #components, _ = malis.connected_components_affgraph(
-        #    affinities_from_components,
-        #    simple_neighborhood)
-        components = binary_dilation(components,iterations=self.iterations)
-        batch.arrays[self.labels].data = components.astype(dtype)
-
-class ComputeDT(gp.BatchFilter):
-
-    def __init__(
-            self,
-            labels,
-            sdt,
-            constant=0.5,
-            dtype=np.float32,
-            mode='3d',
-            dilate_iterations=None,
-            scale=None,
-            mask=None,
-            labels_mask=None,
-            unlabelled=None):
-
-        self.labels = labels
-        self.sdt = sdt
-        self.constant = constant
-        self.dtype = dtype
-        self.mode = mode
-        self.dilate_iterations = dilate_iterations
-        self.scale = scale
-        self.mask = mask
-        self.labels_mask = labels_mask
-        self.unlabelled = unlabelled
-
-    def setup(self):
-
-        spec = self.spec[self.labels].copy()
-
-        self.provides(self.sdt,spec)
-
-        if self.mask:
-            self.provides(self.mask, spec)
-
-    def prepare(self, request):
-
-        deps = gp.BatchRequest()
-        deps[self.labels] = request[self.sdt].copy()
-
-        if self.labels_mask:
-            deps[self.labels_mask] = deps[self.labels].copy()
-
-        if self.unlabelled:
-            deps[self.unlabelled] = deps[self.labels].copy()
-
-        return deps
-
-    def _compute_dt(self, data):
-
-        dist_func = distance_transform_edt
-
-        if self.dilate_iterations:
-            data = binary_dilation(
-                    data,
-                    iterations=self.dilate_iterations)
-
-        if self.scale:
-            inner = dist_func(binary_erosion(data))
-            outer = dist_func(np.logical_not(data))
-
-            distance = (inner - outer) + self.constant
-
-            distance = np.tanh(distance / self.scale)
-
-        else:
-
-            inner = dist_func(data) - self.constant
-            outer = -(dist_func(1-np.logical_not(data)) - self.constant)
-
-            distance = np.where(data, inner, outer)
-
-        return distance.astype(self.dtype)
-
-    def process(self, batch, request):
-
-        outputs = gp.Batch()
-
-        labels_data = batch[self.labels].data
-        distance = np.zeros_like(labels_data).astype(self.dtype)
-
-        spec = batch[self.labels].spec.copy()
-        spec.roi = request[self.sdt].roi.copy()
-        spec.dtype = np.float32
-
-        labels_data = labels_data != 0
-
-        # don't need to compute on entirely background batches
-        if np.sum(labels_data) != 0:
-
-            if self.mode == '3d':
-                distance = self._compute_dt(labels_data)
-
-            elif self.mode == '2d':
-                for z in range(labels_data.shape[0]):
-                    distance[z] = self._compute_dt(labels_data[z])
-            else:
-                raise ValueError('Only implemented for 2d or 3d labels')
-                return
-
-        if self.mask and self.mask in request:
-
-            if self.labels_mask:
-                mask = batch[self.labels_mask].data
-            else:
-                mask = (labels_data!=0).astype(self.dtype)
-
-            if self.unlabelled:
-                unlabelled_mask = batch[self.unlabelled].data
-                mask *= unlabelled_mask
-
-            outputs[self.mask] = gp.Array(
-                    mask.astype(self.dtype),
-                    spec)
-
-        outputs[self.sdt] =  gp.Array(distance, spec)
-
-        return outputs

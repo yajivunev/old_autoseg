@@ -7,30 +7,25 @@ import sys
 import torch
 
 from model import MtlsdModel, WeightedMSELoss
-from utils import calc_max_padding
+from utils import calc_max_padding, BumpBackground, UnbumpBackground
 
-from gunpowder import *
-from gunpowder.ext import torch
-from gunpowder.torch import *
+import gunpowder as gp
 from lsd.gp import AddLocalShapeDescriptor
 
 # example training script for mtlsd model for neuron segmentation
 
+logging.basicConfig(level=logging.INFO)
 logging.getLogger().setLevel(logging.INFO)
 
 torch.backends.cudnn.benchmark = True
 
-data_dir = '../../01_data'
+data_dir = '../../../../../data'
 
 # uncomment and list training zarr directories below
 
-#samples = [
-#    'sample_A.zarr',
-#]
+samples = ['voljo_3.zarr']
 
 neighborhood = [[-1, 0, 0], [0, -1, 0], [0, 0, -1]]
-
-batch_size = 1
 
 def init_weights(m):
     if isinstance(m, (torch.nn.Conv3d,torch.nn.ConvTranspose3d)):
@@ -49,6 +44,7 @@ def train(
         voxel_size,
         sigma,
         downsample,
+        batch_size,
         **kwargs):
 
     model = MtlsdModel(
@@ -65,12 +61,11 @@ def train(
 
     optimizer = torch.optim.Adam(
             model.parameters(),
-            lr=0.5e-4,
-            betas=(0.95,0.999),
-            eps=1e-08)
+            lr=0.1e-4,
+            betas=(0.95,0.999))
 
     if 'output_shape' not in kwargs:
-        output_shape = model.forward(torch.empty(size=[1,1]+input_shape))[0].shape[2:]
+        output_shape = model.forward(torch.empty(size=[batch_size,1]+input_shape))[0].shape[2:]
         with open("config.json","r") as f:
             config = json.load(f)
             
@@ -81,27 +76,27 @@ def train(
 
     else: output_shape = kwargs.get("output_shape")
 
-    output_shape = Coordinate(tuple(output_shape))
-    input_shape = Coordinate(tuple(input_shape))
+    output_shape = gp.Coordinate(tuple(output_shape))
+    input_shape = gp.Coordinate(tuple(input_shape))
 
-    print("output shape: ",tuple(output_shape))
+    raw_fr = gp.ArrayKey('RAW_FR')
+    labels_fr = gp.ArrayKey('GT_LABELS_FR')
+    labels_mask_fr = gp.ArrayKey('GT_LABELS_MASK_FR')
 
-    raw_fr = ArrayKey('RAW_FR')
-    labels_fr = ArrayKey('GT_LABELS_FR')
-    labels_mask_fr = ArrayKey('GT_LABELS_MASK_FR')
+    raw = gp.ArrayKey('RAW')
+    labels = gp.ArrayKey('GT_LABELS')
+    labels_mask = gp.ArrayKey('GT_LABELS_MASK')
+    
+    pred_affs = gp.ArrayKey('PRED_AFFS')
+    gt_affs = gp.ArrayKey('GT_AFFS')
+    affs_weights = gp.ArrayKey('AFFS_WEIGHTS')
+    
+    pred_lsds = gp.ArrayKey('PRED_LSDS')
+    gt_lsds = gp.ArrayKey('GT_LSDS')
+    lsds_weights = gp.ArrayKey('LSDS_WEIGHTS')
 
-    raw = ArrayKey('RAW')
-    labels = ArrayKey('GT_LABELS')
-    labels_mask = ArrayKey('GT_LABELS_MASK')
-    pred_affs = ArrayKey('PRED_AFFS')
-    gt_affs = ArrayKey('GT_AFFS')
-    affs_weights = ArrayKey('AFFS_WEIGHTS')
-    pred_lsds = ArrayKey('PRED_LSDS')
-    gt_lsds = ArrayKey('GT_LSDS')
-    lsds_weights = ArrayKey('LSDS_WEIGHTS')
-
-    downsampling = Coordinate((1,downsample,downsample))
-    voxel_size = Coordinate(tuple(voxel_size)) * downsampling
+    downsampling = gp.Coordinate((1,downsample,downsample))
+    voxel_size = gp.Coordinate(tuple(voxel_size)) * downsampling
     input_size = input_shape * voxel_size
     output_size = output_shape * voxel_size
 
@@ -110,7 +105,7 @@ def train(
                         voxel_size,
                         sigma=sigma)
 
-    request = BatchRequest()
+    request = gp.BatchRequest()
     request.add(raw, input_size)
     request.add(labels, output_size)
     request.add(labels_mask, output_size)
@@ -122,35 +117,35 @@ def train(
     request.add(pred_affs, output_size)
 
     data_sources = tuple(
-            ZarrSource(
+            gp.ZarrSource(
                     os.path.join(data_dir, sample),
                     {
                         raw_fr: 'raw',
-                        labels_fr: 'labels',
-                        labels_mask_fr: 'labels_mask'
+                        labels_fr: 'neuron',
+                        labels_mask_fr: 'labels_mask',
                     },
                     {
-                        raw_fr: ArraySpec(interpolatable=True),
-                        labels_fr: ArraySpec(interpolatable=False),
-                        labels_mask_fr: ArraySpec(interpolatable=False)
+                        raw_fr: gp.ArraySpec(interpolatable=True),
+                        labels_fr: gp.ArraySpec(interpolatable=False),
+                        labels_mask_fr: gp.ArraySpec(interpolatable=False),
                     }
                 ) +
-            Normalize(raw_fr) +
-            Pad(raw_fr, None) +
-            Pad(labels_fr, labels_padding) +
-            Pad(labels_mask_fr, labels_padding) +
-            RandomLocation(min_masked=0.5,mask=labels_mask_fr) +
-            DownSample(raw_fr, (1, downsample, downsample), raw) + 
-            DownSample(labels_fr, (1, downsample, downsample), labels) + 
-            DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask)
+            gp.Normalize(raw_fr) +
+            gp.Pad(raw_fr, None) +
+            gp.Pad(labels_fr, labels_padding) +
+            gp.Pad(labels_mask_fr, labels_padding) +
+            gp.RandomLocation(min_masked=0.25,mask=labels_mask_fr) +
+            gp.DownSample(raw_fr, (1, downsample, downsample), raw) +
+            gp.DownSample(labels_fr, (1, downsample, downsample), labels) +
+            gp.DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask)
             for sample in samples
         )
 
     train_pipeline = data_sources
-    
-    train_pipeline += RandomProvider()
 
-    train_pipeline += ElasticAugment(
+    train_pipeline += gp.RandomProvider()
+
+    train_pipeline += gp.ElasticAugment(
             control_point_spacing=[2,int(50/downsample),int(50/downsample)],
             jitter_sigma=[0,2,2],
             rotation_interval=[0,math.pi/2.0],
@@ -159,40 +154,52 @@ def train(
             max_misalign=int(28/downsample),
             subsample=8)
 
-    train_pipeline += SimpleAugment(transpose_only=[1, 2])
-    train_pipeline += IntensityAugment(raw, 0.9, 1.1, -0.1, 0.1, z_section_wise=True)
-    train_pipeline += GrowBoundary(
+    train_pipeline += gp.SimpleAugment(transpose_only=[1, 2])
+    train_pipeline += gp.IntensityAugment(raw, 0.9, 1.1, -0.1, 0.1, z_section_wise=True)
+
+    train_pipeline += gp.GrowBoundary(
             labels,
             mask=labels_mask,
             steps=1,
             only_xy=True)
 
+    train_pipeline += gp.GrowBoundary(
+            labels_mask,
+            steps=5,
+            only_xy=True)
+
+    train_pipeline += BumpBackground(labels)
+
     train_pipeline += AddLocalShapeDescriptor(
             labels,
             gt_lsds,
             mask=lsds_weights,
+            labels_mask=labels_mask,
             sigma=sigma,
             downsample=1)
 
-    train_pipeline += AddAffinities(
+    train_pipeline += UnbumpBackground(labels)
+
+    train_pipeline += gp.AddAffinities(
             neighborhood,
             labels=labels,
             affinities=gt_affs)
 
-    train_pipeline += BalanceLabels(
+    train_pipeline += gp.BalanceLabels(
             gt_affs,
-            affs_weights)
+            affs_weights,
+            mask=labels_mask)
 
-    train_pipeline += IntensityScaleShift(raw, 2,-1)
+    train_pipeline += gp.IntensityScaleShift(raw, 2,-1)
 
-    train_pipeline += Unsqueeze([raw])
-    train_pipeline += Stack(batch_size)
+    train_pipeline += gp.Unsqueeze([raw]) #1,z,y,x
+    train_pipeline += gp.Stack(batch_size) #n,c,z,y,x
 
-    train_pipeline += PreCache(
+    train_pipeline += gp.PreCache(
             cache_size=40,
-            num_workers=10)
+            num_workers=16)
 
-    train_pipeline += Train(
+    train_pipeline += gp.torch.Train(
             model=model,
             loss=loss,
             optimizer=optimizer,
@@ -211,41 +218,42 @@ def train(
                 0: pred_lsds,
                 1: pred_affs
             },
-            save_every=1000,
+            save_every=2500,
             log_dir='log')
 
-    train_pipeline += Squeeze([raw])
-    train_pipeline += Squeeze([raw, gt_affs, pred_affs, gt_lsds, pred_lsds])
+    train_pipeline += gp.Squeeze([raw,gt_affs,pred_affs,gt_lsds,pred_lsds,labels,affs_weights]) #c,z,y,x
 
-    train_pipeline += IntensityScaleShift(raw, 0.5, 0.5)
+    train_pipeline += gp.IntensityScaleShift(raw, 0.5, 0.5)
 
-    train_pipeline += Snapshot({
+    train_pipeline += gp.Snapshot({
                 raw: 'raw',
                 labels: 'labels',
                 labels_mask: 'labels_mask',
                 gt_affs: 'gt_affs',
                 gt_lsds: 'gt_lsds',
                 pred_affs: 'pred_affs',
-                pred_lsds: 'pred_lsds'
+                pred_lsds: 'pred_lsds',
+                lsds_weights: 'lsds_weights',
+                affs_weights: 'affs_weights'
             },
             dataset_dtypes={
                 labels: np.uint64,
                 gt_affs: np.float32
             },
-            every=500,
+            every=25,
             output_filename='batch_{iteration}.zarr')
 
-    train_pipeline += PrintProfilingStats(every=10)
+    train_pipeline += gp.PrintProfilingStats(every=500)
 
-    with build(train_pipeline) as b:
+    with gp.build(train_pipeline) as b:
         for i in range(max_iteration):
             b.request_batch(request)
 
 if __name__ == '__main__':
 
-    #config_file = sys.argv[1]
-
     with open('config.json','r') as f:
         config = json.load(f)
+
+    #os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
     train(**config)
