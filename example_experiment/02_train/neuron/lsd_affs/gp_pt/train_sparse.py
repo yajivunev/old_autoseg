@@ -142,7 +142,7 @@ def train(
             gp.Pad(labels_fr, labels_padding) +
             gp.Pad(labels_mask_fr, labels_padding) +
             gp.Pad(unlabelled_fr, labels_padding) +
-            gp.RandomLocation(min_masked=0.25,mask=unlabelled_fr) +
+            gp.RandomLocation(min_masked=0.5,mask=unlabelled_fr) +
             gp.DownSample(raw_fr, (1, downsample, downsample), raw) +
             gp.DownSample(labels_fr, (1, downsample, downsample), labels) +
             gp.DownSample(labels_mask_fr, (1, downsample, downsample), labels_mask) +
@@ -172,12 +172,6 @@ def train(
             steps=1,
             only_xy=True)
 
-    train_pipeline += gp.GrowBoundary(
-            unlabelled,
-            mask=labels_mask,
-            steps=1,
-            only_xy=True)
-    
     train_pipeline += gp.GrowBoundary(
             labels_mask,
             steps=5,
