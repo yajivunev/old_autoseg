@@ -18,6 +18,7 @@ def predict_blockwise(
         setup,
         iteration,
         raw_dataset,
+        object_name,
         file_name,
         num_workers,
         num_cache_workers,
@@ -56,6 +57,9 @@ def predict_blockwise(
 
     setup = os.path.abspath(os.path.join(train_dir, setup))
 
+    if object_name is not None:
+        raw_dataset = os.path.join('objects',object_name,raw_dataset)
+    
     # from here on, all values are in world units (unless explicitly mentioned)
 
     # get ROI of source
@@ -93,7 +97,8 @@ def predict_blockwise(
     for output_name, val in outputs.items():
         out_dims = val['out_dims']
         out_dtype = val['out_dtype']
-        out_dataset = output_name
+        
+        out_dataset = os.path.join(object_name,output_name)
 
         ds = daisy.prepare_ds(
             out_file,
@@ -124,7 +129,7 @@ def predict_blockwise(
             auto_file,
             auto_dataset,
             out_file,
-            out_dataset,
+            object_name,
             num_cache_workers),
         check_function = None,
         num_workers=num_workers,
@@ -144,7 +149,7 @@ def predict_worker(
         auto_file,
         auto_dataset,
         out_file,
-        out_dataset,
+        object_name,
         num_cache_workers):
 
     setup_dir = os.path.abspath(os.path.join('..','..', experiment, '02_train', setup))
@@ -171,7 +176,7 @@ def predict_worker(
         raw_file,
         raw_dataset,
         out_file,
-        out_dataset,
+        object_name,
         worker_config)
     
     logging.info('daisy command called')

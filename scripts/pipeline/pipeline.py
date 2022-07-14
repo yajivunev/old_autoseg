@@ -32,7 +32,7 @@ def write_segmentation(
 
     segmentation = daisy.prepare_ds(
         fragments_file,
-        "1segmentation_"+str(threshold),
+        "segmentation_"+str(threshold),
         write_roi,
         voxel_size=voxel_size,
         dtype=np.uint64,

@@ -21,6 +21,7 @@ def extract_fragments(
         file_name,
         affs_dataset,
         fragments_dataset,
+        object_name,
         block_size,
         context,
         num_workers,
@@ -49,11 +50,18 @@ def extract_fragments(
                 )
             )
 
+    fragments_file = affs_file
+
+    affs_dataset = os.path.join(object_name,affs_dataset)
+    fragments_dataset = os.path.join(object_name,fragments_dataset)
+    block_directory = os.path.join(fragments_file,object_name,'block_nodes')
+
     logging.info("Reading affs from %s", affs_file)
     affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    fragments_file = affs_file
-    block_directory = os.path.join(fragments_file, 'block_nodes')
+    if block_size == [0,0,0]:
+        context = [0,0,0]
+        block_size = affs.roi.shape
 
     os.makedirs(block_directory, exist_ok=True)
 

@@ -19,11 +19,13 @@ agglomeration thresholds and find the best threshold. """
 
 base_dir = "/scratch1/04101/vvenu/autoseg"
 
+
 def evaluate_thresholds(
         gt_file,
         gt_dataset,
         fragments_file,
         fragments_dataset,
+        object_name,
         edges_collection,
         thresholds_minmax,
         thresholds_step,
@@ -32,26 +34,24 @@ def evaluate_thresholds(
 
     start = time.time()
 
-    results_file = os.path.join(fragments_file,'results.out')
+    results_file = os.path.join(fragments_file,'results.json')
 
-    logging.basicConfig(
-            filename=results_file,
-            filemode='a',
-            level=logging.INFO)
+    if object_name is not None:
+        gt_dataset = os.path.join('objects',object_name,gt_dataset,'s2')
+        fragments_dataset = os.path.join(object_name,fragments_dataset)
+        results_file = os.path.join(fragments_file,object_name,'results.json')
 
     # open fragments
-    logging.info("Reading fragments from %s" %fragments_file)
     print("Reading fragments from %s" %fragments_file)
 
     fragments = ds_wrapper(fragments_file, fragments_dataset)
 
-    logging.info("Reading gt from %s" %gt_file)
     print("Reading gt from %s" %gt_file)
 
     gt = ds_wrapper(gt_file, gt_dataset)
 
-    logging.info("fragments ROI is {}".format(fragments.roi))
-    logging.info("gt roi is {}".format(gt.roi))
+    print("fragments ROI is {}".format(fragments.roi))
+    print("gt roi is {}".format(gt.roi))
 
     vs = gt.voxel_size
 
@@ -61,16 +61,16 @@ def evaluate_thresholds(
     else:
         common_roi = fragments.roi.intersect(gt.roi)
 
-    logging.info("common roi is {}".format(common_roi))
+    print("common roi is {}".format(common_roi))
     # evaluate only where we have both fragments and GT
-    logging.info("Cropping fragments, mask, and GT to common ROI %s", common_roi)
+    print("Cropping fragments, mask, and GT to common ROI %s", common_roi)
     fragments = fragments[common_roi]
     gt = gt[common_roi]
 
-    logging.info("Converting fragments to nd array...")
+    print("Converting fragments to nd array...")
     fragments = fragments.to_ndarray()
 
-    logging.info("Converting gt to nd array...")
+    print("Converting gt to nd array...")
     gt = gt.to_ndarray()
 
     thresholds = list(np.arange(
@@ -78,50 +78,35 @@ def evaluate_thresholds(
         thresholds_minmax[1],
         thresholds_step))
 
-    logging.info("Evaluating thresholds...")
+    print("Evaluating thresholds...")
     
     # parallel process
-
     manager = Manager()
     metrics = manager.dict()
 
-    metrics["voi"] = manager.dict()
-    metrics["nvi"] = manager.dict()
-    metrics["nid"] = manager.dict()
+    for threshold in thresholds:
+        metrics[threshold] = manager.dict()
 
-
-#    for t in thresholds:
-#
-#        evaluate(t,fragments,gt,mask,fragments_file,edges_collection,metrics)
     with Pool(16) as pool:
-        pool.starmap(evaluate,[(t,fragments,gt,fragments_file,edges_collection,metrics) for t in thresholds])
-    
-    #pool = []
+        pool.starmap(evaluate,[(t,fragments,gt,fragments_file,object_name,edges_collection,metrics) for t in thresholds])
+   
+    voi_sums = {metrics[x]['voi_sum']:x for x in thresholds}
+    nvi_sums = {metrics[x]['nvi_sum']:x for x in thresholds}
+    nids = {metrics[x]['nid']:x for x in thresholds}
 
-    #for t in thresholds:
+    voi_thresh = voi_sums[sorted(voi_sums.keys())[0]]
+    nvi_thresh = nvi_sums[sorted(nvi_sums.keys())[0]]
+    nid_thresh = nids[sorted(nids.keys())[0]]
 
-    #    p = Process(target=evaluate, args=(t,fragments,gt,fragments_file,edges_collection,metrics,))
-    #    p.start()
-    #    pool.append(p)
+    metrics = dict(metrics)
+    metrics['best_thresholds'] = list(set((voi_thresh,nvi_thresh,nid_thresh)))
 
-    #for p in pool: p.join()
+    with open(results_file,"w") as f:
+        json.dump(metrics,f,indent=4)
 
-    logging.info("Best VOI,NVI,NID and respective thresholds: \n")
-    best_voi = metrics['voi'][min(metrics['voi'].keys())]
-    best_nvi = metrics['nvi'][min(metrics['nvi'].keys())]
-    best_nid = metrics['nid'][min(metrics['nid'].keys())]
-    
-    voi_thresh,voi_split,voi_merge = best_voi['threshold'],best_voi['voi_split'],best_voi['voi_merge']
-    nvi_thresh,nvi_split,nvi_merge = best_nvi['threshold'],best_nvi['nvi_split'],best_nvi['nvi_merge']
-    nid,nid_thresh = best_nid['nid'],best_nid['threshold']
-    
-    logging.info("VOI: threshold= {} , VOI= {}, VOI_split= {} , VOI_merge= {}".format(voi_thresh,voi_split+voi_merge,voi_split,voi_merge))
-    logging.info("NVI: threshold= {} , NVI= {}, NVI_split= {} , NVI_merge= {}".format(nvi_thresh,nvi_split+nvi_merge,nvi_split,nvi_merge))
-    logging.info("NID: threshold= {} , NID= {}".format(nid_thresh,nid))
-
-    print("VOI: threshold= {} , VOI= {}, VOI_split= {} , VOI_merge= {}".format(voi_thresh,voi_split+voi_merge,voi_split,voi_merge))
-    print("NVI: threshold= {} , NVI= {}, NVI_split= {} , NVI_merge= {}".format(nvi_thresh,nvi_split+nvi_merge,nvi_split,nvi_merge))
-    print("NID: threshold= {} , NID= {}".format(nid_thresh,nid))
+    print(f"best VOI: threshold= {voi_thresh} , VOI= {metrics[voi_thresh]['voi_sum']}, VOI_split= {metrics[voi_thresh]['voi_split']} , VOI_merge= {metrics[voi_thresh]['voi_merge']}")
+    print(f"best NVI: threshold= {nvi_thresh} , NVI= {metrics[nvi_thresh]['nvi_sum']}, NVI_split= {metrics[nvi_thresh]['nvi_split']} , NVI_merge= {metrics[nvi_thresh]['nvi_merge']}")
+    print(f"best NID: threshold= {nid_thresh} , NID= {metrics[nid_thresh]['nid']}")
     print(f"Time to evaluate thresholds = {time.time() - start}")
 
 def ds_wrapper(in_file, in_ds):
@@ -138,34 +123,37 @@ def evaluate(
         fragments,
         gt,
         fragments_file,
+        object_name,
         edges_collection,
         metrics):
     
     segment_ids = get_segmentation(
             fragments,
             fragments_file,
+            object_name,
             edges_collection,
             threshold)
 
-    voi = evaluate_threshold(
+    results = evaluate_threshold(
             edges_collection,
             segment_ids,
             gt,
             threshold)
 
-    metrics["voi"][voi['voi_split']+voi['voi_merge']] = voi # voi sum is the key to metrics["voi"]
-    metrics["nvi"][voi['nvi_split']+voi['nvi_merge']] = voi # nvi sum is key for metrics["nvi"]
-    metrics["nid"][voi['nid']] = voi # nid is key for nid dict
+    metrics[threshold] = results
+
 
 def get_segmentation(
         fragments,
         fragments_file,
+        object_name,
         edges_collection,
         threshold):
 
-    #logging.info("Loading fragment - segment lookup table for threshold %s..." %threshold)
+    #print("Loading fragment - segment lookup table for threshold %s..." %threshold)
     fragment_segment_lut_dir = os.path.join(
             fragments_file,
+            object_name,
             'luts',
             'fragment_segment')
 
@@ -178,7 +166,7 @@ def get_segmentation(
 
     assert fragment_segment_lut.dtype == np.uint64
 
-    #logging.info("Relabeling fragment ids with segment ids...")
+    #print("Relabeling fragment ids with segment ids...")
 
     segment_ids = replace_values(fragments, fragment_segment_lut[0], fragment_segment_lut[1])
 
@@ -203,16 +191,13 @@ def evaluate_threshold(
         for k in {'voi_split_i', 'voi_merge_j'}:
             del metrics[k]
 
-        #logging.info("Storing VOI values for threshold %f in DB" %threshold)
+        #print("Storing VOI values for threshold %f in DB" %threshold)
 
         metrics['threshold'] = threshold
+        metrics['voi_sum'] = metrics['voi_split']+metrics['voi_merge']
+        metrics['nvi_sum'] = metrics['nvi_split']+metrics['nvi_merge']
         metrics['merge_function'] = edges_collection.strip('edges_')
 
-        logging.info("Threshold: {}".format(threshold))
-        logging.info("VOI sum: {}    VOI split: {}    VOI merge: {}".format(metrics['voi_split']+metrics['voi_merge'],metrics['voi_split'],metrics['voi_merge']))
-        logging.info("NVI sum: {}    NVI split: {}    NVI merge: {}".format(metrics['nvi_split']+metrics['nvi_merge'],metrics['nvi_split'],metrics['nvi_merge']))
-        logging.info("NID: {}\n".format(metrics['nid']))
-        
         return metrics
 
 if __name__ == "__main__":

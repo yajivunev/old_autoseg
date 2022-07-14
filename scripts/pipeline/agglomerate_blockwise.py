@@ -21,6 +21,7 @@ def agglomerate(
         setup,
         iteration,
         file_name,
+        object_name,
         affs_dataset,
         fragments_dataset,
         block_size,
@@ -53,13 +54,19 @@ def agglomerate(
                 )
             )
 
+    affs_dataset = os.path.join(object_name,affs_dataset)
+    fragments_dataset = os.path.join(object_name,fragments_dataset)
+    block_directory = os.path.join(fragments_file,object_name,'block_nodes')
+
     logging.info("Reading affs from %s", affs_file)
     affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
+    if block_size == [0,0,0]:
+        context = [0,0,0]
+        block_size = affs.roi.shape
+
     logging.info("Reading fragments from %s", fragments_file)
     fragments = daisy.open_ds(fragments_file, fragments_dataset, mode='r')
-
-    block_directory = os.path.join(fragments_file, 'block_nodes')
 
     context = daisy.Coordinate(context)
     total_roi = affs.roi.grow(context, context)

@@ -13,6 +13,7 @@ logging.getLogger().setLevel(logging.INFO)
 def extract_segmentation(
         fragments_file,
         fragments_dataset,
+        object_name,
         edges_collection,
         block_size,
         threshold,
@@ -53,7 +54,16 @@ def extract_segmentation(
     '''
 
     # open fragments
+
+    fragments_dataset = os.path.join(object_name,fragments_dataset)
+    results_file = os.path.join(fragments_file,object_name,"results.json")
+    lut_dir = os.path.join(fragments_file,object_name,'luts','fragment_segment')
+
     fragments = daisy.open_ds(fragments_file, fragments_dataset)
+
+    if block_size == [0,0,0]:
+        context = [0,0,0]
+        block_size = fragments.roi.shape
 
     total_roi = fragments.roi
     if roi_offset is not None:
@@ -68,13 +78,11 @@ def extract_segmentation(
 
     thresholds = []
     
-    results_file = os.path.join(fragments_file,"results.out")
-
     if os.path.exists(results_file):
         with open(results_file,"r") as f:
-            lines = f.readlines()
-            for i in [-1,-2,-3]:
-                thresh = float(lines[i].split()[2])
+            results = json.load(f)
+            best = results['best_thresholds']
+            for thresh in best:
                 if thresh not in thresholds:
                     thresholds.append(thresh)
                 else: pass
@@ -82,26 +90,19 @@ def extract_segmentation(
 
     for threshold in thresholds:
 
+        seg_name = os.path.join(object_name,f"segmentation_{threshold}")
+
         start = time.time()
 
         segmentation = daisy.prepare_ds(
             fragments_file,
-            "segmentation_"+str(threshold),
+            seg_name,
             total_roi,
             voxel_size=fragments.voxel_size,
             dtype=np.uint64,
             write_roi=write_roi)
 
         lut_filename = f'seg_{edges_collection}_{int(threshold*100)}'
-
-        lut_dir = os.path.join(
-            fragments_file,
-            'luts',
-            'fragment_segment')
-
-        if run_type:
-            lut_dir = os.path.join(lut_dir, run_type)
-            logging.info(f"Run type set, using luts from {run_type} data")
 
         lut = os.path.join(
                 lut_dir,
@@ -125,7 +126,6 @@ def extract_segmentation(
             write_roi,
             lambda b: segment_in_block(
                 b,
-                fragments_file,
                 segmentation,
                 fragments,
                 lut),
@@ -141,7 +141,6 @@ def extract_segmentation(
 
 def segment_in_block(
         block,
-        fragments_file,
         segmentation,
         fragments,
         lut):
