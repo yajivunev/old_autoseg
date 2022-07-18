@@ -29,16 +29,18 @@ if __name__ == "__main__":
     seg = ds_wrapper(seg_file, seg_dataset)
     mask = ds_wrapper(gt_file, mask_dataset)
 
+    roi = mask.roi
+
     logging.info("Converting gt to nd array...")
-    gt = gt.to_ndarray()
+    gt = gt.to_ndarray(roi)
 
     logging.info("Converting seg to nd array...")
-    seg = seg.to_ndarray().astype(np.uint64)
+    seg = seg.to_ndarray(roi).astype(np.uint64)
 
     logging.info("Convering mask to nd array...")
-    mask = mask.to_ndarray()
+    mask = mask.to_ndarray(roi).astype(bool)
 
-    seg = np.pad(seg,((0,0),(20,20),(20,20)))
+    #seg = np.pad(seg,((0,0),(20,20),(20,20)))
 
     seg = seg * mask #masking out unlabelled in seg
     gt = gt * mask #just in case

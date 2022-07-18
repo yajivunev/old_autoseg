@@ -12,12 +12,12 @@ def get_segmentation(affs, threshold, labels_mask=None):
 
     fragments = watershed_from_affinities(
             affs,
-            labels_mask)[0]
+            1)[0]
     
     thresholds = [threshold]
 
     generator = waterz.agglomerate(
-        affs=affinities.astype(np.float32),
+        affs=affs.astype(np.float32),
         fragments=fragments,
         thresholds=thresholds,
     )

@@ -89,9 +89,10 @@ def extract_segmentation(
     if os.path.exists(results_file):
         with open(results_file,"r") as f:
             results = json.load(f)
-            best = results['best_voi']['threshold']
-            if best not in thresholds:
-                thresholds.append(best)
+            bests = [results[x]['best_voi']['threshold'] for x in results.keys()]
+            for best in bests:
+                if best not in thresholds:
+                    thresholds.append(best)
 
     for threshold in thresholds:
 
