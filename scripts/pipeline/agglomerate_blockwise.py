@@ -21,7 +21,7 @@ def agglomerate(
         setup,
         iteration,
         file_name,
-        object_name,
+        crop,
         affs_dataset,
         fragments_dataset,
         block_size,
@@ -48,21 +48,34 @@ def agglomerate(
             Symbolic name of a merge function. See dictionary below.
     '''
 
-    affs_file = fragments_file = os.path.abspath(
+    affs_file = os.path.abspath(
             os.path.join(
                 base_dir,experiment,"01_data",setup,str(iteration),file_name
                 )
             )
 
-    affs_dataset = os.path.join(object_name,affs_dataset)
-    fragments_dataset = os.path.join(object_name,fragments_dataset)
-    block_directory = os.path.join(fragments_file,object_name,'block_nodes')
+    if crop != "":
+        affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
+        crop_path = os.path.join(affs_file,'crop.json')
+        with open(crop_path,"r") as f:
+            crop = json.load(f)
+        
+        crop_name = crop["name"]
+        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+
+    else:
+        crop_name = ""
+        crop_roi = None
+
+    fragments_file = affs_file
+
+    block_directory = os.path.join(fragments_file,'block_nodes')
 
     logging.info("Reading affs from %s", affs_file)
     affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
     if block_size == [0,0,0]:
-        context = [0,0,0]
+        context = [50,40,40]
         block_size = affs.roi.shape
 
     logging.info("Reading fragments from %s", fragments_file)

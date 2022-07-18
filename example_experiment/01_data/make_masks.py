@@ -4,6 +4,7 @@ import daisy
 import sys
 import skimage.morphology
 
+
 if __name__ == "__main__":
 
     input_zarr = sys.argv[1]

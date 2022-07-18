@@ -5,6 +5,7 @@ import numpy as np
 import os
 import daisy
 import sys
+import shutil
 import time
 import datetime
 #import subprocess
@@ -18,7 +19,7 @@ def predict_blockwise(
         setup,
         iteration,
         raw_dataset,
-        object_name,
+        crop,
         file_name,
         num_workers,
         num_cache_workers,
@@ -36,6 +37,8 @@ def predict_blockwise(
             Name of the setup to predict.
         iteration (``int``):
             Training iteration to predict from.
+        crop (``string``):
+            Path to json containing ROI offset and shape, and crop "name".
         raw_dataset (``string``):
         auto_file (``string``):
         auto_dataset (``string``):
@@ -57,9 +60,6 @@ def predict_blockwise(
 
     setup = os.path.abspath(os.path.join(train_dir, setup))
 
-    if object_name is not None:
-        raw_dataset = os.path.join('objects',object_name,raw_dataset)
-    
     # from here on, all values are in world units (unless explicitly mentioned)
 
     # get ROI of source
@@ -87,6 +87,25 @@ def predict_blockwise(
     input_roi = source.roi.grow(context, context)
     output_roi = source.roi
 
+    if crop != "":
+        crop_path = os.path.join(raw_file,crop)
+
+        with open(crop_path,"r") as f:
+            crop = json.load(f)
+        
+        crop_name = crop["name"]
+        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+        input_roi = crop_roi.grow(context,context)
+        output_roi = crop_roi
+        
+        out_file = os.path.join(out_file,crop_name+".zarr")
+        os.makedirs(out_file,exist_ok=True)
+        shutil.copyfile(crop_path,os.path.join(out_file,'crop.json'))
+
+    else:
+        crop_name = ""
+
+    
     # create read and write ROI
     ndims = source.roi.dims
     block_read_roi = daisy.Roi((0,)*ndims, net_input_size) - context
@@ -98,7 +117,7 @@ def predict_blockwise(
         out_dims = val['out_dims']
         out_dtype = val['out_dtype']
         
-        out_dataset = os.path.join(object_name,output_name)
+        out_dataset = os.path.join(output_name)
 
         ds = daisy.prepare_ds(
             out_file,
@@ -129,7 +148,6 @@ def predict_blockwise(
             auto_file,
             auto_dataset,
             out_file,
-            object_name,
             num_cache_workers),
         check_function = None,
         num_workers=num_workers,
@@ -149,7 +167,6 @@ def predict_worker(
         auto_file,
         auto_dataset,
         out_file,
-        object_name,
         num_cache_workers):
 
     setup_dir = os.path.abspath(os.path.join('..','..', experiment, '02_train', setup))
@@ -167,7 +184,7 @@ def predict_worker(
 
     worker_id = int(daisy.Context.from_env()['worker_id'])
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
+    #os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
     #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
     
     predict(
@@ -176,7 +193,6 @@ def predict_worker(
         raw_file,
         raw_dataset,
         out_file,
-        object_name,
         worker_config)
     
     logging.info('daisy command called')

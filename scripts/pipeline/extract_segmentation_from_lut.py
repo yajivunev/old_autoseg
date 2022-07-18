@@ -13,7 +13,7 @@ logging.getLogger().setLevel(logging.INFO)
 def extract_segmentation(
         fragments_file,
         fragments_dataset,
-        object_name,
+        crop,
         edges_collection,
         block_size,
         threshold,
@@ -55,49 +55,54 @@ def extract_segmentation(
 
     # open fragments
 
-    fragments_dataset = os.path.join(object_name,fragments_dataset)
-    results_file = os.path.join(fragments_file,object_name,"results.json")
-    lut_dir = os.path.join(fragments_file,object_name,'luts','fragment_segment')
+    if crop != "":
+        fragments_file = os.path.join(fragments_file,os.path.basename(crop)[:-4]+'zarr')
+        crop_path = os.path.join(fragments_file,'crop.json')
+        with open(crop_path,"r") as f:
+            crop = json.load(f)
+        
+        crop_name = crop["name"]
+        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+
+    else:
+        crop_name = ""
+        crop_roi = None
+    
+    results_file = os.path.join(fragments_file,"results.json")
+    
+    lut_dir = os.path.join(fragments_file,'luts','fragment_segment')
 
     fragments = daisy.open_ds(fragments_file, fragments_dataset)
 
     if block_size == [0,0,0]:
-        context = [0,0,0]
+        context = [50,40,40]
         block_size = fragments.roi.shape
 
     total_roi = fragments.roi
-    if roi_offset is not None:
-        assert roi_shape is not None, "If roi_offset is set, roi_shape " \
-                                      "also needs to be provided"
-        total_roi = daisy.Roi(offset=roi_offset, shape=roi_shape)
-
     read_roi = daisy.Roi((0,)*3, daisy.Coordinate(block_size))
     write_roi = read_roi
 
     logging.info("Preparing segmentation dataset...")
 
-    thresholds = []
+    thresholds = [0.48,0.52]
     
     if os.path.exists(results_file):
         with open(results_file,"r") as f:
             results = json.load(f)
-            best = results['best_thresholds']
-            for thresh in best:
-                if thresh not in thresholds:
-                    thresholds.append(thresh)
-                else: pass
-    else: thresholds = [threshold]
+            best = results['best_voi']['threshold']
+            if best not in thresholds:
+                thresholds.append(best)
 
     for threshold in thresholds:
 
-        seg_name = os.path.join(object_name,f"segmentation_{threshold}")
+        seg_name = f"segmentation_{threshold}"
 
         start = time.time()
 
         segmentation = daisy.prepare_ds(
             fragments_file,
             seg_name,
-            total_roi,
+            fragments.roi,
             voxel_size=fragments.voxel_size,
             dtype=np.uint64,
             write_roi=write_roi)

@@ -21,7 +21,7 @@ def extract_fragments(
         file_name,
         affs_dataset,
         fragments_dataset,
-        object_name,
+        crop,
         block_size,
         context,
         num_workers,
@@ -32,6 +32,7 @@ def extract_fragments(
         filter_fragments=0,
         replace_sections=None,
         **kwargs):
+    
     '''Run agglomeration in parallel blocks. Requires that affinities have been
     predicted before.
     Args:
@@ -44,24 +45,39 @@ def extract_fragments(
         num_workers (``int``):
             How many blocks to run in parallel.
     '''
-    affs_file = fragments_file = os.path.abspath(
+
+
+    affs_file =  os.path.abspath(
             os.path.join(
                 base_dir,experiment,"01_data",setup,str(iteration),file_name
                 )
             )
 
-    fragments_file = affs_file
+    #crop
+    if crop != "":
+        affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
+        crop_path = os.path.join(affs_file,'crop.json')
+        
+        with open(crop_path,"r") as f:
+            crop = json.load(f)
+        
+        crop_name = crop["name"]
+        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
-    affs_dataset = os.path.join(object_name,affs_dataset)
-    fragments_dataset = os.path.join(object_name,fragments_dataset)
-    block_directory = os.path.join(fragments_file,object_name,'block_nodes')
+    else:
+        crop_name = ""
+        crop_roi = None
 
     logging.info("Reading affs from %s", affs_file)
     affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    if block_size == [0,0,0]:
-        context = [0,0,0]
-        block_size = affs.roi.shape
+    if block_size == [0,0,0]: #if processing one block    
+        context = [50,40,40]
+        block_size = crop_roi.shape if crop_roi else affs.roi.shape
+        
+    fragments_file = affs_file
+
+    block_directory = os.path.join(fragments_file,'block_nodes')
 
     os.makedirs(block_directory, exist_ok=True)
 

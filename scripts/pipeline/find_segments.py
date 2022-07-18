@@ -17,7 +17,7 @@ def find_segments(
         thresholds_step,
         block_size,
         num_workers,
-        object_name,
+        crop,
         fragments_dataset=None,
         run_type=None,
         roi_offset=None,
@@ -58,37 +58,45 @@ def find_segments(
     logging.info("Reading graph")
 
     start = time.time()
-
-    block_directory = os.path.join(fragments_file,object_name,'block_nodes')
-    fragments_dataset = os.path.join(object_name,fragments_dataset)
-
-    if fragments_dataset:
-        fragments = daisy.open_ds(fragments_file, fragments_dataset)
-        roi = fragments.roi
+    
+    if crop != "":
+        fragments_file = os.path.join(fragments_file,os.path.basename(crop)[:-4]+'zarr')
+        crop_path = os.path.join(fragments_file,'crop.json')
+        with open(crop_path,"r") as f:
+            crop = json.load(f)
+        
+        crop_name = crop["name"]
+        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
     else:
-        roi = daisy.Roi(
-            roi_offset,
-            roi_shape)
+        crop_name = ""
+        crop_roi = None
 
-    if block_size == [0,0,0]:
-        context = [0,0,0]
+    block_directory = os.path.join(fragments_file,'block_nodes')
+
+    fragments = daisy.open_ds(fragments_file,fragments_dataset)
+
+    if block_size == [0,0,0]: #if processing one block    
+        context = [50,40,40]
         block_size = fragments.roi.shape
+   
+    roi = fragments.roi
+    block_size = daisy.Coordinate(block_size)
 
     graph_provider = daisy.persistence.FileGraphProvider(
         directory=block_directory,
-        chunk_size=daisy.Coordinate(block_size),
+        chunk_size=block_size,
         edges_collection=edges_collection,
         position_attribute=[
             'center_z',
             'center_y',
             'center_x'])
     
-    #node_attrs = graph_provider.read_nodes(roi)
+    node_attrs = graph_provider.read_nodes(roi)
     #edge_attrs = graph_provider.read_edges(roi)
-    #edge_attrs = graph_provider.read_edges(roi,nodes=node_attrs)
+    edge_attrs = graph_provider.read_edges(roi,nodes=node_attrs)
 
-    node_attrs,edge_attrs = graph_provider.read_blockwise(roi,roi.shape/4,num_workers)
+    #node_attrs,edge_attrs = graph_provider.read_blockwise(roi,block_size,num_workers)
 
     logging.info(f"Read graph in {time.time() - start}")
 
@@ -110,7 +118,6 @@ def find_segments(
 
     out_dir = os.path.join(
         fragments_file,
-        object_name,
         'luts',
         'fragment_segment')
 
