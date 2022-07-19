@@ -21,7 +21,7 @@ def agglomerate(
         setup,
         iteration,
         file_name,
-        crop,
+        crops,
         affs_dataset,
         fragments_dataset,
         block_size,
@@ -54,60 +54,62 @@ def agglomerate(
                 )
             )
 
-    if crop != "":
-        affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
-        crop_path = os.path.join(affs_file,'crop.json')
-        with open(crop_path,"r") as f:
-            crop = json.load(f)
-        
-        crop_name = crop["name"]
-        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+    for crop in crops:
 
-    else:
-        crop_name = ""
-        crop_roi = None
+        if crop != "":
+            affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
+            crop_path = os.path.join(affs_file,'crop.json')
+            with open(crop_path,"r") as f:
+                crop = json.load(f)
+            
+            crop_name = crop["name"]
+            crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
-    fragments_file = affs_file
+        else:
+            crop_name = ""
+            crop_roi = None
 
-    block_directory = os.path.join(fragments_file,'block_nodes')
+        fragments_file = affs_file
 
-    logging.info("Reading affs from %s", affs_file)
-    affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
+        block_directory = os.path.join(fragments_file,'block_nodes')
 
-    if block_size == [0,0,0]:
-        context = [50,40,40]
-        block_size = affs.roi.shape
+        logging.info("Reading affs from %s", affs_file)
+        affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    logging.info("Reading fragments from %s", fragments_file)
-    fragments = daisy.open_ds(fragments_file, fragments_dataset, mode='r')
+        if block_size == [0,0,0]:
+            context = [50,40,40]
+            block_size = crop_roi.shape if crop_roi else affs.roi.shape
 
-    context = daisy.Coordinate(context)
-    total_roi = affs.roi.grow(context, context)
+        logging.info("Reading fragments from %s", fragments_file)
+        fragments = daisy.open_ds(fragments_file, fragments_dataset, mode='r')
 
-    read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
-    write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
+        context = daisy.Coordinate(context)
+        total_roi = affs.roi.grow(context, context)
 
-    task = daisy.Task(
-        'AgglomerateBlockwiseTask',
-        total_roi,
-        read_roi,
-        write_roi,
-        process_function=lambda b: agglomerate_worker(
-            b,
-            affs_file,
-            affs_dataset,
-            fragments_file,
-            fragments_dataset,
-            block_directory,
-            write_roi.shape,
-            merge_function),
-        num_workers=num_workers,
-        read_write_conflict=False,
-        timeout=5,
-        fit='shrink')
+        read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
+        write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
 
-    #done = daisy.run_blockwise([task])
-    return task
+        task = daisy.Task(
+            'AgglomerateBlockwiseTask',
+            total_roi,
+            read_roi,
+            write_roi,
+            process_function=lambda b: agglomerate_worker(
+                b,
+                affs_file,
+                affs_dataset,
+                fragments_file,
+                fragments_dataset,
+                block_directory,
+                write_roi.shape,
+                merge_function),
+            num_workers=num_workers,
+            read_write_conflict=False,
+            timeout=5,
+            fit='shrink')
+
+        #done = daisy.run_blockwise([task])
+        return task
 
 def agglomerate_worker(
         block,

@@ -21,7 +21,7 @@ def extract_fragments(
         file_name,
         affs_dataset,
         fragments_dataset,
-        crop,
+        crops,
         block_size,
         context,
         num_workers,
@@ -46,6 +46,13 @@ def extract_fragments(
             How many blocks to run in parallel.
     '''
 
+    mask_file =  os.path.abspath(
+            os.path.join(
+                base_dir,experiment,"01_data",file_name
+                )
+            )
+
+    mask_dataset = 'labels_mask/s1'
 
     affs_file =  os.path.abspath(
             os.path.join(
@@ -53,80 +60,81 @@ def extract_fragments(
                 )
             )
 
-    #crop
-    if crop != "":
-        affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
-        crop_path = os.path.join(affs_file,'crop.json')
-        
-        with open(crop_path,"r") as f:
-            crop = json.load(f)
-        
-        crop_name = crop["name"]
-        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+    for crop in crops:
 
-    else:
-        crop_name = ""
-        crop_roi = None
+        if crop != "":
+            affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
+            crop_path = os.path.join(affs_file,'crop.json')
+            
+            with open(crop_path,"r") as f:
+                crop = json.load(f)
+            
+            crop_name = crop["name"]
+            crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
-    logging.info("Reading affs from %s", affs_file)
-    affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
+        else:
+            crop_name = ""
+            crop_roi = None
 
-    if block_size == [0,0,0]: #if processing one block    
-        context = [50,40,40]
-        block_size = crop_roi.shape if crop_roi else affs.roi.shape
-        
-    fragments_file = affs_file
+        logging.info("Reading affs from %s", affs_file)
+        affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
 
-    block_directory = os.path.join(fragments_file,'block_nodes')
+        if block_size == [0,0,0]: #if processing one block    
+            context = [50,40,40]
+            block_size = crop_roi.shape if crop_roi else affs.roi.shape
+            
+        fragments_file = affs_file
 
-    os.makedirs(block_directory, exist_ok=True)
+        block_directory = os.path.join(fragments_file,'block_nodes')
 
-    # prepare fragments dataset
-    fragments = daisy.prepare_ds(
-        fragments_file,
-        fragments_dataset,
-        affs.roi,
-        affs.voxel_size,
-        np.uint64,
-        daisy.Roi((0,0,0), block_size),
-        compressor={'id': 'zlib', 'level':5})
+        os.makedirs(block_directory, exist_ok=True)
 
-    context = daisy.Coordinate(context)
-    total_roi = affs.roi.grow(context, context)
-
-    read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
-    write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
-
-    num_voxels_in_block = (write_roi/affs.voxel_size).size
-
-    task = daisy.Task(
-        'ExtractFragmentsBlockwiseTask',
-        total_roi=total_roi,
-        read_roi=read_roi,
-        write_roi=write_roi,
-        process_function=lambda b: extract_fragments_worker(
-            b,
-            affs_file,
-            affs_dataset,
+        # prepare fragments dataset
+        fragments = daisy.prepare_ds(
             fragments_file,
             fragments_dataset,
-            context,
-            block_directory,
-            write_roi.shape,
-            num_voxels_in_block,
-            fragments_in_xy,
-            epsilon_agglomerate,
-            filter_fragments,
-            replace_sections,
-            mask_file,
-            mask_dataset),
-        check_function=None,
-        num_workers=num_workers,
-        max_retries=7,
-        read_write_conflict=False,
-        fit='shrink')
+            affs.roi,
+            affs.voxel_size,
+            np.uint64,
+            daisy.Roi((0,0,0), block_size),
+            compressor={'id': 'zlib', 'level':5})
 
-    return task
+        context = daisy.Coordinate(context)
+        total_roi = affs.roi.grow(context, context)
+
+        read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
+        write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
+
+        num_voxels_in_block = (write_roi/affs.voxel_size).size
+
+        task = daisy.Task(
+            'ExtractFragmentsBlockwiseTask',
+            total_roi=total_roi,
+            read_roi=read_roi,
+            write_roi=write_roi,
+            process_function=lambda b: extract_fragments_worker(
+                b,
+                affs_file,
+                affs_dataset,
+                fragments_file,
+                fragments_dataset,
+                context,
+                block_directory,
+                write_roi.shape,
+                num_voxels_in_block,
+                fragments_in_xy,
+                epsilon_agglomerate,
+                filter_fragments,
+                replace_sections,
+                mask_file,
+                mask_dataset),
+            check_function=None,
+            num_workers=num_workers,
+            max_retries=7,
+            read_write_conflict=False,
+            fit='shrink')
+
+        return task
 
 
 def extract_fragments_worker(

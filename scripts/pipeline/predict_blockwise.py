@@ -19,7 +19,7 @@ def predict_blockwise(
         setup,
         iteration,
         raw_dataset,
-        crop,
+        crops,
         file_name,
         num_workers,
         num_cache_workers,
@@ -51,111 +51,113 @@ def predict_blockwise(
             How many blocks to run in parallel.
     '''
 
-    experiment_dir = os.path.join(base_dir, experiment)
-    data_dir = os.path.join(experiment_dir, '01_data')
-    train_dir = os.path.join(experiment_dir, '02_train')
+    for crop in crops:
 
-    raw_file = os.path.abspath(os.path.join(data_dir,file_name))
-    out_file = os.path.abspath(os.path.join(data_dir, setup, str(iteration), file_name))
+        experiment_dir = os.path.join(base_dir, experiment)
+        data_dir = os.path.join(experiment_dir, '01_data')
+        train_dir = os.path.join(experiment_dir, '02_train')
 
-    setup = os.path.abspath(os.path.join(train_dir, setup))
+        raw_file = os.path.abspath(os.path.join(data_dir,file_name))
+        out_file = os.path.abspath(os.path.join(data_dir, setup, str(iteration), file_name))
 
-    # from here on, all values are in world units (unless explicitly mentioned)
+        setup = os.path.abspath(os.path.join(train_dir, setup))
 
-    # get ROI of source
-    try:
-        source = daisy.open_ds(raw_file, raw_dataset)
-    except:
-        raw_dataset = raw_dataset + '/s0'
-        source = daisy.open_ds(raw_file, raw_dataset)
-    
-    logging.info('Source dataset has shape %s, ROI %s, voxel size %s'%(source.shape, source.roi, source.voxel_size))
+        # from here on, all values are in world units (unless explicitly mentioned)
 
-    # load config
-    with open(os.path.join(setup, 'config.json')) as f:
-        logging.info('Reading setup config from %s'%os.path.join(setup, 'config.json'))
-        net_config = json.load(f)
-    outputs = net_config['outputs']
-
-    # get chunk size and context
-    net_input_size = daisy.Coordinate(net_config['input_shape'])*source.voxel_size
-    net_output_size = daisy.Coordinate(net_config['output_shape'])*source.voxel_size
-    context = (net_input_size - net_output_size)/2
-    print('CONTEXT: ', context)
-
-    # get total input and output ROIs
-    input_roi = source.roi.grow(context, context)
-    output_roi = source.roi
-
-    if crop != "":
-        crop_path = os.path.join(raw_file,crop)
-
-        with open(crop_path,"r") as f:
-            crop = json.load(f)
+        # get ROI of source
+        try:
+            source = daisy.open_ds(raw_file, raw_dataset)
+        except:
+            raw_dataset = raw_dataset + '/s0'
+            source = daisy.open_ds(raw_file, raw_dataset)
         
-        crop_name = crop["name"]
-        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
-        input_roi = crop_roi.grow(context,context)
-        output_roi = crop_roi
+        logging.info('Source dataset has shape %s, ROI %s, voxel size %s'%(source.shape, source.roi, source.voxel_size))
+
+        # load config
+        with open(os.path.join(setup, 'config.json')) as f:
+            logging.info('Reading setup config from %s'%os.path.join(setup, 'config.json'))
+            net_config = json.load(f)
+        outputs = net_config['outputs']
+
+        # get chunk size and context
+        net_input_size = daisy.Coordinate(net_config['input_shape'])*source.voxel_size
+        net_output_size = daisy.Coordinate(net_config['output_shape'])*source.voxel_size
+        context = (net_input_size - net_output_size)/2
+        print('CONTEXT: ', context)
+
+        # get total input and output ROIs
+        input_roi = source.roi.grow(context, context)
+        output_roi = source.roi
+
+        if crop != "":
+            crop_path = os.path.join(raw_file,crop)
+
+            with open(crop_path,"r") as f:
+                crop = json.load(f)
+            
+            crop_name = crop["name"]
+            crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+            input_roi = crop_roi.grow(context,context)
+            output_roi = crop_roi
+            
+            out_file = os.path.join(out_file,crop_name+".zarr")
+            os.makedirs(out_file,exist_ok=True)
+            shutil.copyfile(crop_path,os.path.join(out_file,'crop.json'))
+
+        else:
+            crop_name = ""
+
         
-        out_file = os.path.join(out_file,crop_name+".zarr")
-        os.makedirs(out_file,exist_ok=True)
-        shutil.copyfile(crop_path,os.path.join(out_file,'crop.json'))
+        # create read and write ROI
+        ndims = source.roi.dims
+        block_read_roi = daisy.Roi((0,)*ndims, net_input_size) - context
+        block_write_roi = daisy.Roi((0,)*ndims, net_output_size)
 
-    else:
-        crop_name = ""
+        logging.info('Preparing output dataset...')
 
-    
-    # create read and write ROI
-    ndims = source.roi.dims
-    block_read_roi = daisy.Roi((0,)*ndims, net_input_size) - context
-    block_write_roi = daisy.Roi((0,)*ndims, net_output_size)
+        for output_name, val in outputs.items():
+            out_dims = val['out_dims']
+            out_dtype = val['out_dtype']
+            
+            out_dataset = os.path.join(output_name)
 
-    logging.info('Preparing output dataset...')
+            ds = daisy.prepare_ds(
+                out_file,
+                out_dataset,
+                output_roi,
+                source.voxel_size,
+                out_dtype,
+                write_roi=block_write_roi,
+                num_channels=out_dims,
+                compressor={'id': 'gzip', 'level':5}
+                )
 
-    for output_name, val in outputs.items():
-        out_dims = val['out_dims']
-        out_dtype = val['out_dtype']
-        
-        out_dataset = os.path.join(output_name)
+        logging.info('Starting block-wise processing...')
 
-        ds = daisy.prepare_ds(
-            out_file,
-            out_dataset,
-            output_roi,
-            source.voxel_size,
-            out_dtype,
-            write_roi=block_write_roi,
-            num_channels=out_dims,
-            compressor={'id': 'gzip', 'level':5}
-            )
+        # process block-wise
+        task = daisy.Task(
+            'PredictBlockwiseTask',
+            input_roi,
+            block_read_roi,
+            block_write_roi,
+            process_function=lambda : predict_worker(
+                experiment,
+                setup,
+                iteration,
+                raw_file,
+                raw_dataset,
+                epoch,
+                auto_file,
+                auto_dataset,
+                out_file,
+                num_cache_workers),
+            check_function = None,
+            num_workers=num_workers,
+            read_write_conflict=False,
+            max_retries=5,
+            fit='overhang')
 
-    logging.info('Starting block-wise processing...')
-
-    # process block-wise
-    task = daisy.Task(
-        'PredictBlockwiseTask',
-        input_roi,
-        block_read_roi,
-        block_write_roi,
-        process_function=lambda : predict_worker(
-            experiment,
-            setup,
-            iteration,
-            raw_file,
-            raw_dataset,
-            epoch,
-            auto_file,
-            auto_dataset,
-            out_file,
-            num_cache_workers),
-        check_function = None,
-        num_workers=num_workers,
-        read_write_conflict=False,
-        max_retries=5,
-        fit='overhang')
-
-    return task
+        return task
 
 def predict_worker(
         experiment,
@@ -184,7 +186,7 @@ def predict_worker(
 
     worker_id = int(daisy.Context.from_env()['worker_id'])
 
-    #os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
+    os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
     #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
     
     predict(

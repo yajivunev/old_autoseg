@@ -42,16 +42,18 @@ def evaluate_thresholds(
 
 	results = {}
 
-    for crop in crops:
+    for crop in crops if crop == "crops/crop_2.json":
 
         start = time.time()
         
         if crop != "": #crop must be absolute path
-            with open(crop,"r") as f:
+            with open(os.path.join(gt_file,crop),"r") as f:
                 crop = json.load(f)
             
             crop_name = crop["name"]
             crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+
+            fragments_file = os.path.join(fragments_file,crop_name+'.zarr')
 
         else:
             crop_name = "wtf"

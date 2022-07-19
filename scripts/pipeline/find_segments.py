@@ -17,7 +17,7 @@ def find_segments(
         thresholds_step,
         block_size,
         num_workers,
-        crop,
+        crops,
         fragments_dataset=None,
         run_type=None,
         roi_offset=None,
@@ -55,111 +55,113 @@ def find_segments(
             unboundedness.
     '''
 
-    logging.info("Reading graph")
 
-    start = time.time()
+    for crop in crops:
     
-    if crop != "":
-        fragments_file = os.path.join(fragments_file,os.path.basename(crop)[:-4]+'zarr')
-        crop_path = os.path.join(fragments_file,'crop.json')
-        with open(crop_path,"r") as f:
-            crop = json.load(f)
+        logging.info("Reading graph")
+        start = time.time()
         
-        crop_name = crop["name"]
-        crop_roi = daisy.Roi(crop["offset"],crop["shape"])
+        if crop != "":
+            fragments_file = os.path.join(fragments_file,os.path.basename(crop)[:-4]+'zarr')
+            crop_path = os.path.join(fragments_file,'crop.json')
+            with open(crop_path,"r") as f:
+                crop = json.load(f)
+            
+            crop_name = crop["name"]
+            crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
-    else:
-        crop_name = ""
-        crop_roi = None
+        else:
+            crop_name = ""
+            crop_roi = None
 
-    block_directory = os.path.join(fragments_file,'block_nodes')
+        block_directory = os.path.join(fragments_file,'block_nodes')
 
-    fragments = daisy.open_ds(fragments_file,fragments_dataset)
+        fragments = daisy.open_ds(fragments_file,fragments_dataset)
 
-    if block_size == [0,0,0]: #if processing one block    
-        context = [50,40,40]
-        block_size = fragments.roi.shape
-   
-    roi = fragments.roi
-    block_size = daisy.Coordinate(block_size)
+        if block_size == [0,0,0]: #if processing one block    
+            context = [50,40,40]
+            block_size = crop_roi.shape if crop_roi else fragments.roi.shape
+       
+        roi = fragments.roi
+        block_size = daisy.Coordinate(block_size)
 
-    graph_provider = daisy.persistence.FileGraphProvider(
-        directory=block_directory,
-        chunk_size=block_size,
-        edges_collection=edges_collection,
-        position_attribute=[
-            'center_z',
-            'center_y',
-            'center_x'])
-    
-    node_attrs = graph_provider.read_nodes(roi)
-    #edge_attrs = graph_provider.read_edges(roi)
-    edge_attrs = graph_provider.read_edges(roi,nodes=node_attrs)
+        graph_provider = daisy.persistence.FileGraphProvider(
+            directory=block_directory,
+            chunk_size=block_size,
+            edges_collection=edges_collection,
+            position_attribute=[
+                'center_z',
+                'center_y',
+                'center_x'])
+        
+        #node_attrs = graph_provider.read_nodes(roi)
+        #edge_attrs = graph_provider.read_edges(roi)
+        #edge_attrs = graph_provider.read_edges(roi,nodes=node_attrs)
 
-    #node_attrs,edge_attrs = graph_provider.read_blockwise(roi,block_size,num_workers)
+        node_attrs,edge_attrs = graph_provider.read_blockwise(roi,block_size/2,num_workers)
 
-    logging.info(f"Read graph in {time.time() - start}")
+        logging.info(f"Read graph in {time.time() - start}")
 
-    if 'id' not in node_attrs:
-        logging.info('No nodes found in roi %s' % roi)
-        return
+        if 'id' not in node_attrs:
+            logging.info('No nodes found in roi %s' % roi)
+            return
 
-    nodes = node_attrs['id']
-    edges = np.stack(
-                [
-                    edge_attrs['u'].astype(np.uint64),
-                    edge_attrs['v'].astype(np.uint64)
-                ],
-            axis=1)
+        nodes = node_attrs['id']
+        edges = np.stack(
+                    [
+                        edge_attrs['u'].astype(np.uint64),
+                        edge_attrs['v'].astype(np.uint64)
+                    ],
+                axis=1)
 
-    scores = edge_attrs['merge_score'].astype(np.float32)
+        scores = edge_attrs['merge_score'].astype(np.float32)
 
-    logging.info(f"Complete RAG contains {len(nodes)} nodes, {len(edges)} edges")
+        logging.info(f"Complete RAG contains {len(nodes)} nodes, {len(edges)} edges")
 
-    out_dir = os.path.join(
-        fragments_file,
-        'luts',
-        'fragment_segment')
+        out_dir = os.path.join(
+            fragments_file,
+            'luts',
+            'fragment_segment')
 
-    if run_type:
-        out_dir = os.path.join(out_dir, run_type)
+        if run_type:
+            out_dir = os.path.join(out_dir, run_type)
 
-    os.makedirs(out_dir, exist_ok=True)
+        os.makedirs(out_dir, exist_ok=True)
 
-    thresholds = [round(i,2) for i in np.arange(
-        float(thresholds_minmax[0]),
-        float(thresholds_minmax[1]),
-        thresholds_step)]
+        thresholds = [round(i,2) for i in np.arange(
+            float(thresholds_minmax[0]),
+            float(thresholds_minmax[1]),
+            thresholds_step)]
 
-    #parallel processing
-    
-    start = time.time()
+        #parallel processing
+        
+        start = time.time()
 
-    with mp.Pool(4) as pool:
+        with mp.Pool(4) as pool:
 
-        pool.starmap(get_connected_components,[(nodes,edges,scores,t,edges_collection,out_dir) for t in thresholds])
+            pool.starmap(get_connected_components,[(nodes,edges,scores,t,edges_collection,out_dir) for t in thresholds])
 
-#    pool = []
-#
-#    for t in thresholds:
-#
-#        p = mp.Process(target=get_connected_components, args=(nodes,edges,scores,t,edges_collection,out_dir,))
-#        pool.append(p)
-#        p.start()
-#
-#    for p in pool: p.join()
+    #    pool = []
+    #
+    #    for t in thresholds:
+    #
+    #        p = mp.Process(target=get_connected_components, args=(nodes,edges,scores,t,edges_collection,out_dir,))
+    #        pool.append(p)
+    #        p.start()
+    #
+    #    for p in pool: p.join()
 
-#    for t in thresholds:
-#
-#        get_connected_components(
-#                nodes,
-#                edges,
-#                scores,
-#                t,
-#                edges_collection,
-#                out_dir)
+    #    for t in thresholds:
+    #
+    #        get_connected_components(
+    #                nodes,
+    #                edges,
+    #                scores,
+    #                t,
+    #                edges_collection,
+    #                out_dir)
 
-    logging.info(f"Created and stored lookup tables in {time.time() - start}")
+        logging.info(f"Created and stored lookup tables in {time.time() - start}")
 
 def get_connected_components(
         nodes,
