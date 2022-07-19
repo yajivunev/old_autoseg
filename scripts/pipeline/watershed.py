@@ -150,7 +150,8 @@ def watershed_in_block(
     if mask is not None:
 
         logger.debug("reading mask from %s", block.read_roi)
-        mask_data = get_mask_data_in_roi(mask, affs.roi, affs.voxel_size)
+        assert mask.voxel_size == affs.voxel_size 
+        mask_data = mask.to_ndarray(affs.roi, fill_value=0)
         logger.debug("masking affinities")
         affs.data *= mask_data
 

@@ -39,10 +39,9 @@ def evaluate_thresholds(
         thresholds_step):
 
     results_file = os.path.join(fragments_file,"results.json") 
+    results = {}
 
-	results = {}
-
-    for crop in crops if crop == "crops/crop_2.json":
+    for crop in crops:
 
         start = time.time()
         
@@ -119,7 +118,7 @@ def evaluate_thresholds(
         metrics = dict(metrics)
         metrics['best_voi'] = metrics[voi_thresh]
 
-		results[crop_name] = metrics
+        results[crop_name] = metrics
 
         print(f"best VOI for {crop_name} is at threshold= {voi_thresh} , VOI= {metrics[voi_thresh]['voi_sum']}, VOI_split= {metrics[voi_thresh]['voi_split']} , VOI_merge= {metrics[voi_thresh]['voi_merge']}")
         print(f"Time to evaluate thresholds = {time.time() - start}")
@@ -211,7 +210,7 @@ def evaluate_threshold(
             chosen_ids = np.unique(segment_ids[gt != 0])
 
             #mask out all but remaining ids in segment_ids
-			replace_where_not(segment_ids,chosen_ids,0)
+            replace_where_not(segment_ids,chosen_ids,0)
 
         else: name = crop_name
 
@@ -221,30 +220,31 @@ def evaluate_threshold(
                 segment_ids,
                 return_cluster_scores=False)
 
-		scores = detection_scores(
-				gt,
-				segment_ids,
-				voxel_size=[50,2,2]) #lazy
+        #scores = detection_scores(
+        #        gt,
+        #        segment_ids,
+        #        voxel_size=[50,2,2]) #lazy
         
-		metrics = rand_voi_report.copy()
-		out = {}
+        metrics = rand_voi_report.copy()
+        out = {}
         
-		for k in {'voi_split_i', 'voi_merge_j'}:
+
+        for k in {'voi_split_i', 'voi_merge_j'}:
             del metrics[k]
 
         metrics['voi_sum'] = metrics['voi_split']+metrics['voi_merge']
         metrics['nvi_sum'] = metrics['nvi_split']+metrics['nvi_merge']
         metrics['merge_function'] = edges_collection.strip('edges_')
 
-		metrics["com_distance"] = float(scores["avg_distance"])
-		metrics["iou"] = float(scores["avg_iou"])
-		metrics["tp"] = scores["tp"]
-		metrics["fp"] = scores["fp"]
-		metrics["fn"] = scores["fn"]
-		metrics["precision"] = scores["tp"] / (scores["fp"] + scores["tp"])
-		metrics["recall"] = scores["tp"] / (scores["fp"] + scores["fn"])
+        #metrics["com_distance"] = float(scores["avg_distance"])
+        #metrics["iou"] = float(scores["avg_iou"])
+        #metrics["tp"] = scores["tp"]
+        #metrics["fp"] = scores["fp"]
+        #metrics["fn"] = scores["fn"]
+        #metrics["precision"] = scores["tp"] / (scores["fp"] + scores["tp"])
+        #metrics["recall"] = scores["tp"] / (scores["fp"] + scores["fn"])
 
-		metrics = {name+'_'+k:v for k,v in metrics.items()}
+        #metrics = {name+'_'+k:v for k,v in metrics.items()}
         metrics['threshold'] = threshold
 
         return metrics
