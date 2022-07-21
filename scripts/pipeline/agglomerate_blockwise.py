@@ -48,23 +48,27 @@ def agglomerate(
             Symbolic name of a merge function. See dictionary below.
     '''
 
-    affs_file = os.path.abspath(
-            os.path.join(
-                base_dir,experiment,"01_data",setup,str(iteration),file_name
-                )
-            )
-
     for crop in crops:
+        
+        affs_file = os.path.abspath(
+                os.path.join(
+                    base_dir,experiment,"01_data",setup,str(iteration),file_name
+                    )
+                )
+
 
         if crop != "":
-            affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
-            crop_path = os.path.join(affs_file,'crop.json')
+
+            crop_path = os.path.abspath(os.path.join(base_dir,experiment,"01_data",file_name,crop))
+
             with open(crop_path,"r") as f:
                 crop = json.load(f)
             
             crop_name = crop["name"]
             crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
+            affs_file = os.path.join(affs_file,crop_name+'.zarr')
+        
         else:
             crop_name = ""
             crop_roi = None
@@ -108,8 +112,12 @@ def agglomerate(
             timeout=5,
             fit='shrink')
 
-        #done = daisy.run_blockwise([task])
-        return task
+        done = daisy.run_blockwise([task])
+
+        if not done:
+            raise RuntimeError("at least one block failed!")
+
+        block_size = [0,0,0]
 
 def agglomerate_worker(
         block,
@@ -176,12 +184,7 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    task = agglomerate(**config)
-
-    done = daisy.run_blockwise([task])
-
-    if not done:
-        raise RuntimeError("Agglomeration failed for (at least) one block")
+    agglomerate(**config)
 
     end = time.time()
 

@@ -122,7 +122,9 @@ def evaluate_thresholds(
 
         print(f"best VOI for {crop_name} is at threshold= {voi_thresh} , VOI= {metrics[voi_thresh]['voi_sum']}, VOI_split= {metrics[voi_thresh]['voi_split']} , VOI_merge= {metrics[voi_thresh]['voi_merge']}")
         print(f"Time to evaluate thresholds = {time.time() - start}")
-    
+   
+        fragments_file = os.path.dirname(fragments_file) #reset
+
     #finally, dump all results to json
     with open(results_file,"w") as f:
         json.dump(results,f,indent=4)

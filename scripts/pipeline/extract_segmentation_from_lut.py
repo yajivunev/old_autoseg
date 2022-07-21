@@ -77,7 +77,7 @@ def extract_segmentation(
 
         if block_size == [0,0,0]:
             context = [50,40,40]
-            block_size = fragments.roi.shape
+            block_size = crop_roi.shape if crop_roi else fragments.roi.shape
 
         total_roi = fragments.roi
         read_roi = daisy.Roi((0,)*3, daisy.Coordinate(block_size))
@@ -145,6 +145,10 @@ def extract_segmentation(
                 raise RuntimeError("Extraction of segmentation from LUT failed for (at least) one block")
 
             logging.info(f"Took {time.time() - start} seconds to extract segmentation from LUT")
+   
+        #reset
+        block_size = [0,0,0]
+        fragments_file = os.path.dirname(fragments_file)
 
 def segment_in_block(
         block,

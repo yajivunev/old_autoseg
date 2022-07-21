@@ -55,12 +55,11 @@ def predict_blockwise(
 
         experiment_dir = os.path.join(base_dir, experiment)
         data_dir = os.path.join(experiment_dir, '01_data')
-        train_dir = os.path.join(experiment_dir, '02_train')
 
         raw_file = os.path.abspath(os.path.join(data_dir,file_name))
         out_file = os.path.abspath(os.path.join(data_dir, setup, str(iteration), file_name))
 
-        setup = os.path.abspath(os.path.join(train_dir, setup))
+        setup_dir = os.path.abspath(os.path.join(experiment_dir,'02_train', setup))
 
         # from here on, all values are in world units (unless explicitly mentioned)
 
@@ -74,8 +73,8 @@ def predict_blockwise(
         logging.info('Source dataset has shape %s, ROI %s, voxel size %s'%(source.shape, source.roi, source.voxel_size))
 
         # load config
-        with open(os.path.join(setup, 'config.json')) as f:
-            logging.info('Reading setup config from %s'%os.path.join(setup, 'config.json'))
+        with open(os.path.join(setup_dir, 'config.json')) as f:
+            logging.info('Reading setup config from %s'%os.path.join(setup_dir, 'config.json'))
             net_config = json.load(f)
         outputs = net_config['outputs']
 
@@ -90,7 +89,7 @@ def predict_blockwise(
         output_roi = source.roi
 
         if crop != "":
-            crop_path = os.path.join(raw_file,crop)
+            crop_path = os.path.abspath(os.path.join(raw_file,crop))
 
             with open(crop_path,"r") as f:
                 crop = json.load(f)
@@ -100,7 +99,7 @@ def predict_blockwise(
             input_roi = crop_roi.grow(context,context)
             output_roi = crop_roi
             
-            out_file = os.path.join(out_file,crop_name+".zarr")
+            out_file = os.path.abspath(os.path.join(out_file,crop_name+".zarr"))
             os.makedirs(out_file,exist_ok=True)
             shutil.copyfile(crop_path,os.path.join(out_file,'crop.json'))
 
@@ -108,6 +107,8 @@ def predict_blockwise(
             crop_name = ""
 
         
+        print(f"OUT FILE IS {out_file}")
+
         # create read and write ROI
         ndims = source.roi.dims
         block_read_roi = daisy.Roi((0,)*ndims, net_input_size) - context
@@ -142,7 +143,7 @@ def predict_blockwise(
             block_write_roi,
             process_function=lambda : predict_worker(
                 experiment,
-                setup,
+                setup_dir,
                 iteration,
                 raw_file,
                 raw_dataset,
@@ -157,11 +158,14 @@ def predict_blockwise(
             max_retries=5,
             fit='overhang')
 
-        return task
+        done = daisy.run_blockwise([task])
+
+        if not done:
+            raise RuntimeError("at least one block failed!")
 
 def predict_worker(
         experiment,
-        setup,
+        setup_dir,
         iteration,
         raw_file,
         raw_dataset,
@@ -171,9 +175,17 @@ def predict_worker(
         out_file,
         num_cache_workers):
 
-    setup_dir = os.path.abspath(os.path.join('..','..', experiment, '02_train', setup))
     sys.path.append(setup_dir)
     from predict import predict
+
+    if iteration == 0:
+
+        all_ckpts = glob.glob(os.path.join(setup_dir,"model_checkpoint_*"))
+        all_ckpts = sorted(all_ckpts,rever=True)
+
+        iteration = int(all_ckpts[0].split('_')[-1])
+
+        print(iteration)
 
     if raw_file.endswith('.json'):
         with open(raw_file, 'r') as f:
@@ -186,7 +198,7 @@ def predict_worker(
 
     worker_id = int(daisy.Context.from_env()['worker_id'])
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
+    #os.environ["CUDA_VISIBLE_DEVICES"] = "%d"%worker_id
     #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
     
     predict(
@@ -211,12 +223,7 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    task = predict_blockwise(**config)
-
-    succeeded = daisy.run_blockwise([task])
-
-    if not succeeded:
-        raise RuntimeError("Prediction failed for (at least) one block")
+    predict_blockwise(**config)
 
     end = time.time()
 

@@ -46,25 +46,25 @@ def extract_fragments(
             How many blocks to run in parallel.
     '''
 
-    mask_file =  os.path.abspath(
-            os.path.join(
-                base_dir,experiment,"01_data",file_name
-                )
-            )
-
-    mask_dataset = 'labels_mask/s1'
-
-    affs_file =  os.path.abspath(
-            os.path.join(
-                base_dir,experiment,"01_data",setup,str(iteration),file_name
-                )
-            )
-
     for crop in crops:
 
+        mask_file =  os.path.abspath(
+                os.path.join(
+                    base_dir,experiment,"01_data",file_name
+                    )
+                )
+
+        mask_dataset = 'labels_mask/s1'
+
+        affs_file =  os.path.abspath(
+                os.path.join(
+                    base_dir,experiment,"01_data",setup,str(iteration),file_name
+                    )
+                )
+
+
         if crop != "":
-            affs_file = os.path.join(affs_file,os.path.basename(crop)[:-4]+'zarr')
-            crop_path = os.path.join(affs_file,'crop.json')
+            crop_path = os.path.join(mask_file,crop)
             
             with open(crop_path,"r") as f:
                 crop = json.load(f)
@@ -72,6 +72,8 @@ def extract_fragments(
             crop_name = crop["name"]
             crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
+            affs_file = os.path.join(affs_file,crop_name+'.zarr')
+            
         else:
             crop_name = ""
             crop_roi = None
@@ -134,8 +136,12 @@ def extract_fragments(
             read_write_conflict=False,
             fit='shrink')
 
-        return task
+        done = daisy.run_blockwise([task])
 
+        if not done:
+            raise RuntimeError("at least one block failed!")
+
+        block_size = [0,0,0]
 
 def extract_fragments_worker(
         block,
@@ -215,12 +221,7 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    task = extract_fragments(**config)
-
-    done = daisy.run_blockwise([task])
-
-    if not done:
-        raise RuntimeError("ExtractFragments failed for (at least) one block")
+    extract_fragments(**config)
 
     end = time.time()
 

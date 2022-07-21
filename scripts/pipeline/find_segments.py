@@ -74,6 +74,7 @@ def find_segments(
             crop_name = ""
             crop_roi = None
 
+        print(f"FRAGS FILE {fragments_file}")
         block_directory = os.path.join(fragments_file,'block_nodes')
 
         fragments = daisy.open_ds(fragments_file,fragments_dataset)
@@ -162,6 +163,10 @@ def find_segments(
     #                out_dir)
 
         logging.info(f"Created and stored lookup tables in {time.time() - start}")
+
+        #reset
+        block_size = [0,0,0]
+        fragments_file = os.path.dirname(fragments_file)
 
 def get_connected_components(
         nodes,
