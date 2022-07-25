@@ -8,7 +8,7 @@ import sys
 import time
 import subprocess
 
-from lsd import agglomerate_in_block
+from lsd.post import agglomerate_in_block
 
 logging.getLogger().setLevel(logging.INFO)
 # logging.getLogger('lsd.parallel_fragments').setLevel(logging.DEBUG)

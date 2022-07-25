@@ -54,8 +54,6 @@ def extract_fragments(
                     )
                 )
 
-        mask_dataset = 'labels_mask/s1'
-
         affs_file =  os.path.abspath(
                 os.path.join(
                     base_dir,experiment,"01_data",setup,str(iteration),file_name
@@ -169,7 +167,7 @@ def extract_fragments_worker(
         fragments_dataset,
         mode='r+')
 
-    if mask_file is not None:
+    if mask_dataset is not None:
 
         logging.info("Reading mask from {}".format(mask_file))
         mask = daisy.open_ds(

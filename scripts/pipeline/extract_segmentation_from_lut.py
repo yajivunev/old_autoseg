@@ -85,7 +85,7 @@ def extract_segmentation(
 
         logging.info("Preparing segmentation dataset...")
 
-        thresholds = [0.48,0.52]
+        thresholds = []
         
         if os.path.exists(results_file):
             with open(results_file,"r") as f:
