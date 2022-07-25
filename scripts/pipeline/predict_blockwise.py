@@ -1,4 +1,5 @@
 import hashlib
+import glob
 import json
 import logging
 import numpy as np
@@ -181,9 +182,12 @@ def predict_worker(
     if iteration == 0:
 
         all_ckpts = glob.glob(os.path.join(setup_dir,"model_checkpoint_*"))
-        all_ckpts = sorted(all_ckpts,rever=True)
+        all_ckpts = sorted(all_ckpts,reverse=True)
 
-        iteration = int(all_ckpts[0].split('_')[-1])
+        if os.path.join(setup_dir,"model_checkpoint_50000") in all_ckpts:
+            iteration = 50000
+        else:
+            iteration = int(all_ckpts[0].split('_')[-1])
 
         print(iteration)
 

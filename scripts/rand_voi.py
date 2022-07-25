@@ -63,10 +63,13 @@ if __name__ == "__main__":
     gt = ds_wrapper(gt_file, gt_dataset)
     seg = ds_wrapper(seg_file, seg_dataset)
 
+    common_roi = gt.roi.intersect(seg.roi)
+    print(common_roi)
+
     logging.info("Converting gt to nd array...")
-    gt = gt.to_ndarray()
+    gt = gt.to_ndarray(common_roi).astype(np.uint64)
 
     logging.info("Converting seg to nd array...")
-    seg = seg.to_ndarray()
+    seg = seg.to_ndarray(common_roi).astype(np.uint64)
 
     compute_rand_voi(gt,seg)
