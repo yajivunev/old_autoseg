@@ -2,7 +2,30 @@ import numpy as np
 from typing import List
 import gunpowder as gp
 import copy
+from skimage.morphology import binary_dilation, disk
 
+class BinaryDilation(gp.BatchFilter):
+
+    def __init__(
+            self,
+            labels,
+            iterations=1):
+
+        self.labels = labels
+        self.iterations = iterations
+
+    def process(self, batch, request):
+
+        footprint = np.stack([np.zeros((3,3)),disk(1),np.zeros((3,3))])
+        label_data = batch.arrays[self.labels].data
+        dtype = label_data.dtype
+
+        assert len(label_data.shape) == 3
+
+        for _ in range(self.iterations):
+            label_data = binary_dilation(label_data,footprint=footprint) 
+
+        batch.arrays[self.labels].data = label_data.astype(dtype)
 
 def calc_max_padding(
         output_size,

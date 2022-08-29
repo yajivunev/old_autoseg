@@ -8,7 +8,8 @@ import sys
 import time
 import subprocess
 
-from watershed import watershed_in_block
+#from watershed import watershed_in_block
+from lsd.post import watershed_in_block
 
 logging.getLogger().setLevel(logging.INFO)
 #logging.getLogger('lsd.parallel_fragments').setLevel(logging.DEBUG)
@@ -19,7 +20,7 @@ def extract_fragments(
         setup,
         iteration,
         file_name,
-        affs_dataset,
+        ds_in_dataset,
         fragments_dataset,
         crops,
         block_size,
@@ -36,7 +37,7 @@ def extract_fragments(
     '''Run agglomeration in parallel blocks. Requires that affinities have been
     predicted before.
     Args:
-        affs_dataset,
+        ds_in_dataset,
         block_size (``tuple`` of ``int``):
             The size of one block in world units.
         context (``tuple`` of ``int``):
@@ -54,7 +55,7 @@ def extract_fragments(
                     )
                 )
 
-        affs_file =  os.path.abspath(
+        ds_in_file =  os.path.abspath(
                 os.path.join(
                     base_dir,experiment,"01_data",setup,str(iteration),file_name
                     )
@@ -70,20 +71,20 @@ def extract_fragments(
             crop_name = crop["name"]
             crop_roi = daisy.Roi(crop["offset"],crop["shape"])
 
-            affs_file = os.path.join(affs_file,crop_name+'.zarr')
+            ds_in_file = os.path.join(ds_in_file,crop_name+'.zarr')
             
         else:
             crop_name = ""
             crop_roi = None
 
-        logging.info("Reading affs from %s", affs_file)
-        affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
+        logging.info(f"Reading {ds_in_dataset} from {ds_in_file}")
+        ds_in = daisy.open_ds(ds_in_file, ds_in_dataset, mode='r')
 
         if block_size == [0,0,0]: #if processing one block    
             context = [50,40,40]
-            block_size = crop_roi.shape if crop_roi else affs.roi.shape
+            block_size = crop_roi.shape if crop_roi else ds_in.roi.shape
             
-        fragments_file = affs_file
+        fragments_file = ds_in_file
 
         block_directory = os.path.join(fragments_file,'block_nodes')
 
@@ -93,19 +94,19 @@ def extract_fragments(
         fragments = daisy.prepare_ds(
             fragments_file,
             fragments_dataset,
-            affs.roi,
-            affs.voxel_size,
+            ds_in.roi,
+            ds_in.voxel_size,
             np.uint64,
             daisy.Roi((0,0,0), block_size),
             compressor={'id': 'zlib', 'level':5})
 
         context = daisy.Coordinate(context)
-        total_roi = affs.roi.grow(context, context)
+        total_roi = ds_in.roi.grow(context, context)
 
-        read_roi = daisy.Roi((0,)*affs.roi.dims, block_size).grow(context, context)
-        write_roi = daisy.Roi((0,)*affs.roi.dims, block_size)
+        read_roi = daisy.Roi((0,)*ds_in.roi.dims, block_size).grow(context, context)
+        write_roi = daisy.Roi((0,)*ds_in.roi.dims, block_size)
 
-        num_voxels_in_block = (write_roi/affs.voxel_size).size
+        num_voxels_in_block = (write_roi/ds_in.voxel_size).size
 
         task = daisy.Task(
             'ExtractFragmentsBlockwiseTask',
@@ -114,8 +115,8 @@ def extract_fragments(
             write_roi=write_roi,
             process_function=lambda b: extract_fragments_worker(
                 b,
-                affs_file,
-                affs_dataset,
+                ds_in_file,
+                ds_in_dataset,
                 fragments_file,
                 fragments_dataset,
                 context,
@@ -143,8 +144,8 @@ def extract_fragments(
 
 def extract_fragments_worker(
         block,
-        affs_file,
-        affs_dataset,
+        ds_in_file,
+        ds_in_dataset,
         fragments_file,
         fragments_dataset,
         context,
@@ -158,8 +159,8 @@ def extract_fragments_worker(
         mask_file,
         mask_dataset):
 
-    logging.info("Reading affs from %s", affs_file)
-    affs = daisy.open_ds(affs_file, affs_dataset, mode='r')
+    logging.info("Reading ds_in from %s", ds_in_file)
+    ds_in = daisy.open_ds(ds_in_file, ds_in_dataset, mode='r')
 
     logging.info("Reading fragments from %s", fragments_file)
     fragments = daisy.open_ds(
@@ -197,7 +198,7 @@ def extract_fragments_worker(
     logging.info("block write roi shape: %s", block.write_roi.shape)
 
     watershed_in_block(
-        affs,
+        ds_in,
         block,
         context,
         rag_provider,

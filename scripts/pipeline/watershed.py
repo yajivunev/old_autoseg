@@ -1,29 +1,54 @@
 import numpy as np
+import sys
 import daisy
 import logging
 import waterz
 from scipy.ndimage import distance_transform_edt, measurements, label
-from scipy.ndimage import gaussian_filter, maximum_filter
+from scipy.ndimage import maximum_filter
 from skimage.segmentation import watershed
+from skimage.filters import sobel, threshold_otsu
+from skimage.restoration import denoise_tv_chambolle
 from funlib.segment.arrays import relabel,replace_values
 
 logger = logging.getLogger(__name__)
 
-def watershed_from_lsds(lsds, sigma, return_seeds=False, return_distances=False):
+def watershed_from_lsds(lsds, return_seeds=False, return_distances=False):
     '''Extract initial fragments from local shape descriptors ``lsds`` using a
     watershed transform. This assumes that the first three entries of
     ``lsds`` for each voxel are vectors pointing towards the center.'''
 
-    boundary_distances = np.sum(lsds[0:3,:]**2, axis=0)
-    boundary_distances = gaussian_filter(boundary_distances, sigma)
-    boundary_distances = boundary_distances.max() - boundary_distances
+    fragments = np.zeros(lsds.shape[1:], dtype=np.uint64)
+    boundary_distances = np.zeros(fragments.shape)
+    depth = fragments.shape[0]
 
-    ret = watershed_from_boundary_distance(boundary_distances, return_seeds)
+    if return_seeds:
+        seeds = np.zeros(fragments.shape, dtype=np.uint64)
+
+    id_offset = 0
+
+    for z in range(depth):
+
+        sob =  sobel(denoise_tv_chambolle(lsds[1,z],weight=0.2)) + sobel(denoise_tv_chambolle(lsds[2,z],weight=0.2))
+        thresh = threshold_otsu(sob)
+        boundary_mask = sob <= thresh
+        boundary_distances[z] = distance_transform_edt(boundary_mask)
+        
+        ret = watershed_from_boundary_distance(boundary_distances[z], boundary_mask, return_seeds=return_seeds)
+
+        fragments[z] = ret[0]
+
+        if return_seeds:
+            seeds[z] = ret[2]
+
+        id_offset = ret[1]
+
+    ret = (fragments,id_offset)
 
     if return_distances:
-        ret = ret + (boundary_distances,)
+        ret += (boundary_distances,)
 
     return ret
+
 
 def watershed_from_affinities(
         affs,
@@ -115,7 +140,7 @@ def watershed_from_boundary_distance(
     return ret
 
 def watershed_in_block(
-        affs,
+        ds_in,
         block,
         context,
         rag_provider,
@@ -137,44 +162,54 @@ def watershed_in_block(
             this value improves downsampled segmentation.
     '''
 
-    total_roi = affs.roi
+    total_roi = ds_in.roi
 
-    logger.debug("reading affs from %s", block.read_roi)
+    name = ds_in.data.name[-4:] # "lsds" or "affs"
 
-    affs = affs.intersect(block.read_roi)
-    affs.materialize()
+    logger.debug(f"reading {name} from %s", block.read_roi)
 
-    if affs.dtype == np.uint8:
-        logger.info("Assuming affinities are in [0,255]")
+    ds_in = ds_in.intersect(block.read_roi)
+    ds_in.materialize()
+
+    if ds_in.dtype == np.uint8:
+        logger.info("Assuming affinities/lsds are in [0,255]")
         max_affinity_value = 255.0
-        affs.data = affs.data.astype(np.float32)
+        ds_in.data = ds_in.data.astype(np.float32)
     else:
         max_affinity_value = 1.0
 
     if mask is not None:
 
         logger.debug("reading mask from %s", block.read_roi)
-        assert mask.voxel_size == affs.voxel_size 
-        mask_data = mask.to_ndarray(affs.roi, fill_value=0)
+        assert mask.voxel_size == ds_in.voxel_size 
+        mask_data = mask.to_ndarray(ds_in.roi, fill_value=0)
         logger.debug("masking affinities")
-        affs.data *= mask_data
+        ds_in.data *= mask_data
 
     # extract fragments
-    fragments_data, _ = watershed_from_affinities(
-        affs.data,
-        max_affinity_value,
-        fragments_in_xy=fragments_in_xy,
-        min_seed_distance=min_seed_distance)
+    if name == 'affs':
+        
+        fragments_data, _ = watershed_from_affinities(
+                ds_in.data,
+                max_affinity_value,
+                fragments_in_xy=fragments_in_xy,
+                min_seed_distance=min_seed_distance)
+    
+    elif name == 'lsds':
+        
+        fragments_data, _ = watershed_from_lsds(ds_in.data)
+    
+    else: raise AssertionError("can only make fragments from lsds or affs")
 
     if mask is not None:
         fragments_data *= mask_data.astype(np.uint64)
 
-    if filter_fragments > 0:
+    if filter_fragments > 0 and name == "affs":
 
         if fragments_in_xy:
-            average_affs = np.mean(affs.data[0:2]/max_affinity_value, axis=0)
+            average_affs = np.mean(ds_in.data[0:2]/max_affinity_value, axis=0)
         else:
-            average_affs = np.mean(affs.data/max_affinity_value, axis=0)
+            average_affs = np.mean(ds_in.data/max_affinity_value, axis=0)
 
         filtered_fragments = []
 
@@ -195,14 +230,14 @@ def watershed_in_block(
         replace = np.zeros_like(filtered_fragments)
         replace_values(fragments_data, filtered_fragments, replace, inplace=True)
 
-    if epsilon_agglomerate > 0:
+    if epsilon_agglomerate > 0 and name=="affs":
 
         logger.info(
             "Performing initial fragment agglomeration until %f",
             epsilon_agglomerate)
 
         generator = waterz.agglomerate(
-                affs=affs.data/max_affinity_value,
+                affs=ds_in.data/max_affinity_value,
                 thresholds=[epsilon_agglomerate],
                 fragments=fragments_data,
                 scoring_function='OneMinus<HistogramQuantileAffinity<RegionGraphType, 25, ScoreValue, 256, false>>',
@@ -222,12 +257,12 @@ def watershed_in_block(
         block_begin = block.write_roi.get_begin()
         shape = block.write_roi.get_shape()
 
-        z_context = context[0]/affs.voxel_size[0]
+        z_context = context[0]/ds_in.voxel_size[0]
         logger.info("Z context: %i",z_context)
 
         mapping = {}
 
-        voxel_offset = block_begin[0]/affs.voxel_size[0]
+        voxel_offset = block_begin[0]/ds_in.voxel_size[0]
 
         for i,j in zip(
                 range(fragments_data.shape[0]),
@@ -247,7 +282,7 @@ def watershed_in_block(
 
     #todo add key value replacement option
 
-    fragments = daisy.Array(fragments_data, affs.roi, affs.voxel_size)
+    fragments = daisy.Array(fragments_data, ds_in.roi, ds_in.voxel_size)
 
     # crop fragments to write_roi
     fragments = fragments[block.write_roi]
@@ -280,7 +315,7 @@ def watershed_in_block(
 
     # get fragment centers
     fragment_centers = {
-        fragment: block.write_roi.get_offset() + affs.voxel_size*daisy.Coordinate(center)
+        fragment: block.write_roi.get_offset() + ds_in.voxel_size*daisy.Coordinate(center)
         for fragment, center in zip(
             fragment_ids,
             measurements.center_of_mass(fragments.data, fragments.data, fragment_ids))

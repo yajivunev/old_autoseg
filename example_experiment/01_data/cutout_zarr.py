@@ -11,41 +11,32 @@ def cutout_zarr(
         cutout_offset,
         cutout_shape):
 
-    z_start = cutout_offset[0]
-    y_start = cutout_offset[1]
-    x_start = cutout_offset[2]
-    z_shape = cutout_shape[0]
-    y_shape = cutout_shape[1]
-    x_shape = cutout_shape[2]
+    offset = daisy.Coordinate(cutout_offset)
+    shape = daisy.Coordinate(cutout_shape)
 
     input_zarr = zarr.open(input_zarr,"r")
     output_zarr = zarr.open(output_zarr,"w")
 
     print("reading input zarr datasets...")
 
-    raw = input_zarr['raw']
-    labels = input_zarr['labels']
-    mask = input_zarr['labels_mask']
+    raw = input_zarr['clahe_raw/s1']
+    labels = input_zarr['labels/s1']
 
-    resolution = raw.attrs['resolution']  
-    offset = raw.attrs['offset']
-    offset = [
-            offset[0]+(z_start*resolution[0]),
-            offset[1]+(y_start*resolution[1]),
-            offset[2]+(x_start*resolution[2])]
+    raw = daisy.open_ds(input_zarr,"clahe_raw/s1")
+    labels = daisy.open_ds(input_zarr,"labels/s1")
+    
+    vs = raw.voxel_size
+    requested_roi = daisy.Roi(offset,shape)
 
     print("writing output zarr...")
 
     for ds_name, data in [
             #('raw',raw)]:#,('labels',labels),('labels_mask',mask)]:
-            ('raw',raw),('labels',labels),('labels_mask',mask)]:
+            ('clahe_raw',raw),('labels',labels)]:
 
         print("cutting out %s .." % ds_name)
 
-        data = data[
-                z_start:z_start+z_shape,
-                y_start:y_start+y_shape,
-                x_start:x_start+x_shape]
+        data = data.to_ndarray(requested_roi)
 
         print("writing %s .." % ds_name)
 
@@ -57,7 +48,7 @@ def cutout_zarr(
                     ))
 
         ds_out.attrs['offset'] = offset
-        ds_out.attrs['resolution'] = resolution
+        ds_out.attrs['resolution'] = vs
 
 if __name__ == "__main__":
 

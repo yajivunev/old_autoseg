@@ -21,6 +21,7 @@ def downscale_block(in_array, out_array, factor, block):
 
     dims = len(factor)
     in_data = in_array.to_ndarray(block.read_roi, fill_value=0)
+    name = in_array.data.name
 
     in_shape = daisy.Coordinate(in_data.shape[-dims:])
     assert in_shape.is_multiple_of(factor)
@@ -29,7 +30,7 @@ def downscale_block(in_array, out_array, factor, block):
     if n_channels >= 1:
         factor = (1,)*n_channels + factor
 
-    if in_data.dtype == np.uint64:
+    if in_data.dtype == np.uint64 or 'label' in name or 'id' in name:
         slices = tuple(slice(k//2, None, k) for k in factor)
         out_data = in_data[slices]
     else:
@@ -165,13 +166,6 @@ if __name__ == "__main__":
         '-d',
         type=str,
         help="The name of the dataset")
-    parser.add_argument(
-        '--scales',
-        '-s',
-        nargs='*',
-        type=int,
-        required=True,
-        help="The downscaling factor between scales")
     parser.add_argument(
         '--chunk_shape',
         '-c',
