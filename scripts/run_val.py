@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import numpy as np
@@ -10,19 +11,18 @@ import daisy
 from multiprocessing import Pool
 
 from post import post_lsds
+import gc
 
 def run_val(args):
 
     raw_container = args['raw_container']
     pred_container = args['pred_container']
     roi = args['roi']
-    downsampling_mode = args['downsampling_mode']
-    factor = args['factor']
-    target_dwt = args['target_dwt']
+    downsampling = args['downsampling']
+    lsds_dwt = args['lsds_dwt']
     components = args['components']
     normalize_lsds = args['normalize_lsds']
     affs_nb = args['affs_nb']
-    affs_max_dist = args['affs_max_dist']
     affs_max_filter = args['affs_max_filter']
     fragments_dwt = args['fragments_dwt']
     bg_mask = args['bg_mask']
@@ -32,19 +32,17 @@ def run_val(args):
         raw_container,
         pred_container,
         roi,
-        downsampling_mode,
-        factor,
-        target_dwt,
+        downsampling,
+        lsds_dwt,
         components,
         normalize_lsds,
         affs_nb,
-        affs_max_dist,
         affs_max_filter,
         fragments_dwt,
         bg_mask,
         merge_function)
 
-    return args | results["best"]
+    return args | results
 
 
 if __name__ == "__main__":
@@ -57,19 +55,14 @@ if __name__ == "__main__":
 
     keys, values = zip(*grid.items())
     arguments = [dict(zip(keys, v)) for v in itertools.product(*values)]
+
+    arguments = arguments[-23:]
     length = len(arguments)
-
-    #arguments = arguments[:2]
-
-    results = {}
 
     print(f"total number of validation runs: {length}")
     
-    with Pool(8) as pool:
+    with Pool(128,maxtasksperchild=1) as pool:
 
-        for i,result in enumerate(tqdm.tqdm(pool.imap(run_val,arguments,chunksize=1),total=length)):
-                results[i] = result
-
-    if results != {}:
-        with open(results_out,'w') as f:
-            json.dump(results,f,indent=4)
+        for i,result in enumerate(tqdm.tqdm(pool.imap_unordered(run_val,arguments),total=length)):
+            with open(os.path.join(results_out,f"{i+89976}.json"),"w") as f:
+                json.dump(result,f,indent=4)

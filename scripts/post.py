@@ -186,13 +186,11 @@ def post_lsds(
         raw_container,
         pred_container,
         roi,
-        downsampling_mode,
-        factor,
-        target_dwt,
+        downsampling,
+        lsds_dwt,
         components,
         normalize_lsds,
         affs_nb,
-        affs_max_dist,
         affs_max_filter,
         fragments_dwt,
         bg_mask,
@@ -203,7 +201,7 @@ def post_lsds(
     merge_function = waterz_merge_function[merge_function]
     
     #open datasets
-    labels = daisy.open_ds(raw_container,"labels/s1")
+    labels = daisy.open_ds(raw_container,"labels/s2")
     lsds = daisy.open_ds(pred_container,"lsds")
 
     if roi is None:
@@ -216,13 +214,13 @@ def post_lsds(
     lsds = lsds.to_ndarray(roi)
 
     #denoise lsds or convert to float32
-    if target_dwt is not None:
-        if target_dwt[0] == "tv":
-            lsds = np.stack([denoise_tv_chambolle(x,weight=target_dwt[1]) for x in lsds])
+    if lsds_dwt is not None:
+        if lsds_dwt[0] == "tv":
+            lsds = np.stack([denoise_tv_chambolle(x,weight=lsds_dwt[1]) for x in lsds])
             lsds = lsds.astype(np.float32)
 
-        elif target_dwt[0] == "bilateral":
-            lsds = np.stack([denoise_bilateral(lsds[:,z],sigma_color=target_dwt[1],channel_axis=0) for z in range(lsds.shape[1])],axis=1)
+        elif lsds_dwt[0] == "bilateral":
+            lsds = np.stack([denoise_bilateral(lsds[:,z],sigma_color=lsds_dwt[1],channel_axis=0) for z in range(lsds.shape[1])],axis=1)
             lsds = lsds.astype(np.float32)
             
         else:
@@ -232,14 +230,14 @@ def post_lsds(
         lsds = (lsds/255.0).astype(np.float32) if lsds.dtype == np.uint8 else lsds
         
     #downsample lsds
-    if factor > 1:
-        if downsampling_mode == 'rescale':
-            lsds = rescale(lsds,[1,1,1/factor,1/factor],anti_aliasing=True,order=1).astype(np.float32)
-        elif downsampling_mode == 'local_mean':
-            lsds = downscale_local_mean(lsds,(1,1,factor,factor))
+    if downsampling is not None:
+        if downsampling[0] == 'rescale':
+            lsds = rescale(lsds,[1,1,1/downsampling[1],1/downsampling[1]],anti_aliasing=True,order=1).astype(np.float32)
+        elif downsampling[0] == 'local_mean':
+            lsds = downscale_local_mean(lsds,(1,1,downsampling[1],downsampling[1]))
             lsds = lsds.astype(np.float32)
         else:
-            lsds = lsds[:,:,::factor,::factor]
+            lsds = lsds[:,:,::downsampling[1],::downsampling[1]]
         
     #get components of lsds
     if components is not None:
@@ -264,8 +262,8 @@ def post_lsds(
     #make affs
     affs = get_affs(
             lsds,
-            affs_nb,
-            affs_max_dist,
+            affs_nb[0],
+            affs_nb[1],
             affs_max_filter)
 
     #remove lsds from memory
@@ -278,10 +276,13 @@ def post_lsds(
     frags_time = time.time() - frags_time
 
     #crop labels and raw for eval,vis
-    labels = labels[:-affs_max_dist,:-affs_max_dist*factor,:-affs_max_dist*factor]
+    if downsampling is not None:
+        labels = labels[:-affs_nb[1],:-affs_nb[1]*downsampling[1],:-affs_nb[1]*downsampling[1]]
+    else:   
+        labels = labels[:-affs_nb[1],:-affs_nb[1],:-affs_nb[1]]
 
     #agglomerate
-    thresholds = [round(x,2) for x in np.arange(0,1,1/25)]
+    thresholds = [round(x,2) for x in np.arange(0,0.5,1/25)]
 
     generator = waterz.agglomerate(
             affs=affs,
@@ -295,9 +296,10 @@ def post_lsds(
     #over thresholds
     results = {}
     for thresh,seg in zip(thresholds,generator):
-        
-        seg = rescale(seg, [1,factor,factor], order=0);
-        
+       
+        if downsampling is not None:
+            seg = rescale(seg, [1,downsampling[1],downsampling[1]], order=0);
+
         #eval
         eval_time = time.time()
         
@@ -319,8 +321,8 @@ def post_lsds(
         results[thresh] = metrics
 
     #rescale fragments
-    if factor > 1:
-            frags = rescale(frags[0], [1,factor,factor], order=0)
+    if downsampling is not None:
+            frags = rescale(frags[0], [1,downsampling[1],downsampling[1]], order=0)
     else: frags = frags[0]
 
     #evaluate fragments
@@ -555,13 +557,11 @@ def eval_run(args):
                 raw_container,
                 pred_container,
                 roi,
-                downsampling_mode="local_mean",
-                factor=1,
-                target_dwt=["tv",0.1],
+                downsampling=None,
+                lsds_dwt=["tv",0.1],
                 components="0129",
                 normalize_lsds=True,
-                affs_nb=1,
-                affs_max_dist=10,
+                affs_nb=[1,3],
                 affs_max_filter=False,
                 fragments_dwt=None,
                 bg_mask=False)
